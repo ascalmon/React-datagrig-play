@@ -17,6 +17,7 @@ import { DataGridPro } from '@mui/x-data-grid-pro';
 import SideMenu from '../components/SideMenu'
 import Header from '../components/Header'
 import PageHeader from '../components/PageHeader'
+import Employees from '../Pages/Employees/Employees'
 
 
 import { CssBaseline, makeStyles} from "@material-ui/core"
@@ -276,7 +277,7 @@ const theme = createTheme({
   },
   props: {
     MuiIconButton: {
-      disableRipple: true
+      disableRipple: true,
     }
   }
 });
@@ -339,11 +340,7 @@ function App() {
       />
       <Header className={ classes.root }/>
       <CssBaseline />
-      <PageHeader
-        title="Datagrid Pro Playground"
-        subtitle="DataGrid functionalities"
-            icon={<PeopleIcon fontSize='large'/>}
-      />
+      
    
       <div style={{ height: 400, width: '100%' }}>
         <div style={{ display: 'flex', height: '100%' }}>
@@ -358,6 +355,11 @@ function App() {
               </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
+                <PageHeader
+                  title="Datagrid Pro Playground"
+                  subtitle="DataGrid functionalities"
+                  icon={<PeopleIcon fontSize='large' />}
+                />
               <DataGridPro
                 // sortModel={sortModel}
                 // onSortModelChange={(model) => setSortModel(model)}
@@ -399,10 +401,10 @@ function App() {
               />
             </TabPanel>
             <TabPanel value={value} index={1}>
-              Item Two
+              <Employees />
             </TabPanel>
             <TabPanel value={value} index={2}>
-              Item Three
+              <Employees />
             </TabPanel>
 
         </div>
