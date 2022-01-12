@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Grid, TextField} from '@mui/material';
+import * as employeeService  from '../../services/employeeService'
+import { Grid, TextField, Select, InputLabel, MenuItem} from '@mui/material';
 import { makeStyles } from "@material-ui/core";
 
 import Radio from '@mui/material/Radio';
@@ -38,12 +39,17 @@ export default function EmployeeForm() {
             ...values,
             [name]: value
         })
+        console.log('Name & Value', name, value)
     }
 
     const [values, setValues] = useState(initialFValues);
 
     const classes = useStyles();
 
+    const optionsAdm = employeeService.getDepartmentCollection();
+    const optionsGen = employeeService.getGenderCollection();
+
+    console.log('Options', optionsAdm, optionsGen)
     return (
 
         <form class={classes.root}>
@@ -83,7 +89,7 @@ export default function EmployeeForm() {
                     />
                 </Grid>
                 <Grid item xs={6}>
-                    <FormControl component="fieldset">
+                    <FormControl  variant="outlined">
                         <FormLabel component="legend">Gender</FormLabel>
                         <RadioGroup row
                             aria-label="gender"
@@ -92,10 +98,29 @@ export default function EmployeeForm() {
                             value={values.gender}
                             onChange={handleInputChange}
                         >
-                            <FormControlLabel value="female" control={<Radio />} label="Female" />
-                            <FormControlLabel value="male" control={<Radio />} label="Male" />
-                            <FormControlLabel value="other" control={<Radio />} label="Other" />
+                            {optionsGen.map((item) => {
+                                return <FormControlLabel key={item.id} value={item.id} control={<Radio />} label={item.title} />
+                            })}   
                         </RadioGroup>
+                    </FormControl>
+
+                    <FormControl variant="outlined">
+                        <InputLabel id="departmentId">Department Id</InputLabel>
+                        <Select
+                            labelId="departmentId"
+                            id="departmentId"
+                            name="departmentId"
+                            value={values.departmentId}
+                            label="Department Id"
+                            onChange={handleInputChange}
+                            options={employeeService.getDepartmentCollection()}
+                        >
+                            <MenuItem value="">None</MenuItem>
+                            {optionsAdm.map( (item ) => {
+                                return <MenuItem key={item.id} value={item.id}>{item.title}</MenuItem>
+                            })}
+                            
+                        </Select>
                     </FormControl>
                 </Grid>
             </Grid>

@@ -296,7 +296,7 @@ const useStyles = makeStyles({
 
 function App() {
 
-  const classes = useStyles()
+  const classes = useStyles();
 
   const initialState = []
   const [removeRecords, setRemoveRecords] = useState(initialState)
