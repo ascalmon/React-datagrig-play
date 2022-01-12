@@ -1,0 +1,15 @@
+npm install @mui/x-data-grid-pro
+
+// with yarn
+yarn add @mui/x-data-grid-pro
+
+// with npm
+npm install @mui/material
+
+
+// with yarn
+yarn add @mui/material
+
+npm i @emotion/react @emotion/styled
+
+npm install @emotion/react --save
