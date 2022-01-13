@@ -232,9 +232,13 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
+        <div>
         <Box sx={{ p: 3 }}>
+          <div>
           <Typography>{children}</Typography>
+          </div>
         </Box>
+        </div>
       )}
     </div>
   );
@@ -263,6 +267,10 @@ const theme = createTheme({
     secondary: {
       main: "#F83245",
       light: "#F8324526"
+    },
+    default: {
+      main: "#9E9E9E",
+      light: "#0E0E0E"
     },
     background: {
       default: "#F4F5FD"
@@ -345,8 +353,7 @@ function App() {
       <div style={{ height: 400, width: '100%' }}>
         <div style={{ display: 'flex', height: '100%' }}>
           <div style={{ flexGrow: 1 }}>
-
-
+          
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
               <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                 <Tab label="Item One" {...a11yProps(0)} />
@@ -354,12 +361,16 @@ function App() {
                 <Tab label="Item Three" {...a11yProps(2)} />
               </Tabs>
             </Box>
+             
             <TabPanel value={value} index={0}>
+              <div>
+                
                 <PageHeader
                   title="Datagrid Pro Playground"
                   subtitle="DataGrid functionalities"
                   icon={<PeopleIcon fontSize='large' />}
                 />
+                </div>
               <DataGridPro
                 // sortModel={sortModel}
                 // onSortModelChange={(model) => setSortModel(model)}
