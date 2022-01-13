@@ -120,7 +120,7 @@ export default function EmployeeForm() {
                         onChange = {handleInputChange}
                         autoComplete='off'
                         error={errors.fullName}
-                        helperText={errors.fullName && "This field is required"}
+                        helperText={errors && errors.fullName && "This field is required"}
                     />
                     <TextField
                         variant="outlined"
@@ -130,7 +130,7 @@ export default function EmployeeForm() {
                         onChange={handleInputChange}
                         autoComplete='off'
                         error={errors.email}
-                        helperText={errors.email && "Email format is not valid"}
+                        helperText={errors && errors.email && "Email format is not valid"}
                     />
                     <TextField
                         variant="outlined"
@@ -140,7 +140,7 @@ export default function EmployeeForm() {
                         onChange={handleInputChange}
                         autoComplete='off'
                         error={errors.mobile}
-                        helperText={errors.mobile && "This field is required"}
+                        helperText={errors && errors.mobile && "This field is required"}
                     />
                     <TextField
                         variant="outlined"
@@ -150,7 +150,7 @@ export default function EmployeeForm() {
                         onChange={handleInputChange}
                         autoComplete='off'
                         error={errors.city}
-                        helperText={errors.city && "This field is required"}
+                        helperText={errors && errors.city && "This field is required"}
                     />
                 </Grid>
                 <Grid item xs={6}>
