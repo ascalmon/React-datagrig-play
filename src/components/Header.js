@@ -2,7 +2,6 @@ import React from 'react'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { makeStyles } from "@material-ui/core";
-//import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { Badge, IconButton, InputBase } from '@mui/material';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';

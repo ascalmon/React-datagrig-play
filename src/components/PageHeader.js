@@ -34,7 +34,7 @@ export default function PageHeader(props) {
 
     return (
         <div>
-        <Paper elevation={0} square className={ classes.root }>
+        <Paper component="div" elevation={0} square className={ classes.root }>
             <div className={ classes.pageHeader}>
                 <Card className={classes.pageIcon}>
                     {icon}

@@ -15,6 +15,8 @@ import Button from '@mui/material/Button';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
+import * as utils from '../../utils'
+
 
 
 const initialFValues = {
@@ -47,6 +49,8 @@ const useStyles = makeStyles(theme => ({
 
 
 export default function EmployeeForm() {
+
+    const validateOnChange = true;
    
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -54,7 +58,11 @@ export default function EmployeeForm() {
             ...values,
             [name]: value
         })
-        console.log('Name & Value', name, value)
+
+        if (validateOnChange) {
+            console.log('Validation', { [name]: value })
+            validate({[name]: value })
+        }
     }
 
     const handleChange = (e) => {
@@ -73,22 +81,32 @@ export default function EmployeeForm() {
         })
     }
 
-    const validate = () => {
-        let temp = {};
-        temp.fullName = values.fullName?"":"This field is required."
-        temp.email = (/$ˆ|.+@.+..+/).test(values.email)?"": "Email is not valid."
-        temp.mobile = values.mobile.length>9? "":"Minimum 10 numbers required."
-        temp.city = values.city ? "" : "This field is required."
-        temp.departmentId = values.departmentId.length!==0?"":"This field is required"
+    const validate = (fieldValues = values) => {
+        console.log('Values', fieldValues)
+        let temp = {...errors};
+        if ('fullName' in fieldValues) 
+            temp.fullName = fieldValues.fullName?"":"This field is required."
+        if ('email' in fieldValues) 
+            temp.email = (/$ˆ|.+@.+..+/).test(fieldValues.email)?"": "Email is not valid."
+        if ('mobile' in fieldValues) 
+            temp.mobile = fieldValues.mobile.length>9? "":"Minimum 10 numbers required."
+        if ('city' in fieldValues) 
+            temp.city = fieldValues.city ? "" : "This field is required."
+        if ('departmentId' in fieldValues) 
+            temp.departmentId = fieldValues.departmentId.length!==0?"":"This field is required"
+
         setErrors({...temp})
 
-        return Object.values(temp).every(x => x == "")
+        if (fieldValues === values ) // Identify validation from submit
+            return Object.values(temp).every(x => x ==="")
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (validate() ) {
+            utils.saveDataToDb('newUser', values)
             console.log('Validate True')
+            utils.getDataFromDb('newUser')
         }
     }
 
@@ -140,7 +158,7 @@ export default function EmployeeForm() {
                         onChange={handleInputChange}
                         autoComplete='off'
                         error={errors.mobile}
-                        helperText={errors && errors.mobile && "This field is required"}
+                        helperText={errors && errors.mobile && "Minimum 10 numbers required."}
                     />
                     <TextField
                         variant="outlined"

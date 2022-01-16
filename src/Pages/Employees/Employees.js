@@ -20,14 +20,14 @@ export default function Employees() {
     return (
         <>
         <div>
-        <PageHeader
+        <PageHeader component="div"
             title="New Employee"
             subtitle="Form design with validation"
             icon={<PeopleIcon fontSize='large'/>}
       />
         </div>
         <div>
-        <Paper className={ classes.pageContent }>
+        <Paper component="div" className={ classes.pageContent }>
             <EmployeeForm  />
         </Paper>
         </div>
