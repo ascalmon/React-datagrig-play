@@ -177,13 +177,10 @@ function App() {
     cellClassName: 'font-tabular-nums',
   };
 
-  const [newRows, setNewRows] = useState([])
- 
+  const [newRows, setNewRows] = useState([]);
 
 
 // ____________________________________________ Columns _________________________________________________
-
-
 
 
 
@@ -391,6 +388,7 @@ function App() {
       width: 180,
       valueGetter: ({ value }) => value && new Date(value),
     },
+    
     {
       field: 'Account',
       cellClassName: 'super-app-theme--cell',
@@ -398,7 +396,11 @@ function App() {
       editable: true,
       hide: false,
       renderCell: (params) => (
-        params.row.company.catchPhrase
+        <GridActionsCellItem
+          icon={<DeleteIcon />}
+          label="Delete"
+          onClick={(e) => {handleDeleteRow(e, params)}}
+          showInMenu />
       ),
     },
     {
@@ -424,7 +426,7 @@ function App() {
         <GridActionsCellItem
           icon={<DeleteIcon />}
           label="Delete"
-          onClick={() => { console.log('Delete') }}
+          onClick={(e) => { handleDeleteRow(e, params) }}
           showInMenu />,
         <GridActionsCellItem
           icon={<SecurityIcon />}
@@ -464,11 +466,6 @@ function App() {
 
 
 
-
- 
-
-
-
   useEffect(() => {
     const ok = false
     if (!newRows || ok) {
@@ -476,10 +473,17 @@ function App() {
       .then((resp) => {
         resp.json().then(
           (response) => {
-            // response.map((item) => {
+          response.map((item) => {
+            console.log('Item', item)
+            item['country'] = 'Brazil'
+            item['discount'] = ''
+            item['lastLogin'] = Date.now()
+            item['Account'] = false
+            item['subTotal'] = 0
+            item['total'] = 0
+          })
+            setNewRows(response);  
             utils.saveDataToDb('user', response)
-            // })
-
           }
         )
       })
@@ -488,7 +492,7 @@ function App() {
     
     utils.getDataFromDb('user').then((response) => {
       console.log('here', response)
-      setNewRows(response);
+      setNewRows(response);  
     })
     // eslint-disable-next-line 
   }, []);
@@ -512,10 +516,15 @@ function App() {
     utils.saveDataToDb('user', newRows)
   }
 
-  const handleDeleteRow = (e) => {
-    const selectedIDs = new Set(removeRecords);
-    setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
-    console.log("Selected Ids", selectedIDs);
+  const handleDeleteRow = (e, params) => {
+    if (params === 'btn') {
+      const selectedIDs = new Set(removeRecords);
+      setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
+    } else {
+      const selectedIDs = new Set([params.id]);
+      setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
+      console.log("Selected Ids", selectedIDs);
+    }
   };
 
   const handleCellEditCommit = (e:GridCellEditCommitParams) => {
@@ -549,7 +558,7 @@ function App() {
   //   );
   // }
 
- 
+
   
   return (
     <>
@@ -636,7 +645,7 @@ function App() {
                     onClick={handleSaveData}
                   >Save Data
                   </Button>
-                    <Button size="small" onClick={handleDeleteRow}>
+                    <Button size="small" onClick={(e) => {handleDeleteRow(e, 'btn')}}>
                       Delete rows
                     </Button>
                 </div>
