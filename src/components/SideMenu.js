@@ -103,11 +103,16 @@ export default function SideMenu(props) {
                             component="div">
                             {subtitle3}-{status === true? "Inactive": "Active"}
                         </Typography>
-
+                        
                         <Typography
                             variant="subtitle2"
                             component="div">
-                            {'Keys in use: '}{keysInUse}
+                            {'Keys in use: '}
+                        
+                            <ul>
+                            {keysInUse.map((item)=> {return <li key={item}> { item } </li>}
+                            )}
+                            </ul>
                         </Typography>
                     </div>
                 </Card>

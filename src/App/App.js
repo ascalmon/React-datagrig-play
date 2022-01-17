@@ -18,7 +18,8 @@ import SideMenu from '../components/SideMenu'
 import Header from '../components/Header'
 import PageHeader from '../components/PageHeader'
 import Employees from '../Pages/Employees/Employees'
-import * as utils from '../utils'
+import * as utils from '../utils';
+import appConfig from '../appConfig';
 
 
 
@@ -308,7 +309,7 @@ function App() {
           <span role="img" aria-label="enjoy">
             🏦
           </span>
-
+         
         </strong>
       ),
       valueGetter: (params) =>
@@ -469,7 +470,8 @@ function App() {
 // ];
 
 const ok = false;
-const [keysInUse, setKeysInUse] = useState('');
+const [keysInUse, setKeysInUse] = useState([]);
+const [headers, setHeaders] = useState([]);
 
   useEffect(() => {
     
@@ -480,6 +482,7 @@ const [keysInUse, setKeysInUse] = useState('');
           (response) => {
           response.map((item) => {
             console.log('Item', item)
+            item['Avatar'] = {}
             item['country'] = 'Brazil'
             item['discount'] = ''
             item['lastLogin'] = Date.now()
@@ -487,7 +490,7 @@ const [keysInUse, setKeysInUse] = useState('');
             item['subTotal'] = 0
             item['total'] = 0
           })
-            setNewRows(response);  
+            setNewRows(response);
             utils.saveDataToDb('user', response)
           }
         )
@@ -498,26 +501,38 @@ const [keysInUse, setKeysInUse] = useState('');
     utils.getDataFromDb('user').then((response) => {
       console.log('here', response)
       setNewRows(response);
+      
+      let array = []
+        Object.keys(response[0]).map((item) => {
+          if (typeof response[0][item] === 'object' & Object.keys(response[0][item]).length > 0) {
+          Object.keys(response[0][item]).map((media) => {
+            array.push(media)
+          })
+          } else {
+            array.push(item)
+          }
+        })
+        console.log('Array of Headers', array)
+        setHeaders(array);
 
-      localForage.keys().then(function (keys) {
-        
+      localForage.keys().then(function (keys) { 
         setKeysInUse(keys)
       }).catch(function (err) {
-        
         console.log(err);
       });
     })
     // eslint-disable-next-line 
   }, []);
  
-
-
   const classes = useStyles();
   
 
   const initialState = []
   const [removeRecords, setRemoveRecords] = useState(initialState)
   const [value, setValue] = React.useState(0);
+
+  console.log('appConfig', appConfig['website'].field)
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -552,7 +567,7 @@ const [keysInUse, setKeysInUse] = useState('');
     setNewRows(array);
   }
 
-
+  // utils.saveDataToDb('temp', 'Daniel')
 
 
   // const CustomToolbar = () => {
@@ -585,7 +600,6 @@ const [keysInUse, setKeysInUse] = useState('');
         titleCol="Columns Data"
         subtitleCol="Columns"
         numberCol={columns.length}
-        iconCol={<ViewColumnIcon fontSize="small" />}
         titleForage="Local Forage"
         status={ok}
         subtitle3="Status"
