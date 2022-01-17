@@ -43,9 +43,9 @@ const useStyles= makeStyles(theme => ({
 
 export default function SideMenu(props) {
 
-    const { titleRow, subtitleRow, numberRow, iconRow, titleCol, subtitleCol, numberCol, iconCol  } = props;
+    const { titleRow, subtitleRow, numberRow, iconRow, titleCol, subtitleCol, numberCol, iconCol, titleForage, status, subtitle3, keysInUse, iconStorage  } = props;
     const classes = useStyles();
-
+ 
     return (
         <div className={classes.sideMenu}>
             <h1 className={ classes.sideHeader }>Datagrid Data</h1>
@@ -87,8 +87,31 @@ export default function SideMenu(props) {
                     </div>
                 </Card>
             </div>
-       
-           
+            <hr />
+            <div className={classes.pageHeader}>
+                <Card className={classes.pageIcon}>
+                    {iconStorage}
+                    <div className={classes.pageTitle}>
+                        <Typography
+                            variant="h6"
+                            component="div">
+                            {titleForage}
+                        </Typography>
+
+                        <Typography
+                            variant="subtitle2"
+                            component="div">
+                            {subtitle3}-{status === true? "Inactive": "Active"}
+                        </Typography>
+
+                        <Typography
+                            variant="subtitle2"
+                            component="div">
+                            {'Keys in use: '}{keysInUse}
+                        </Typography>
+                    </div>
+                </Card>
+            </div>
 
         </div>
     )
