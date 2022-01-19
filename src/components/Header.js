@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { makeStyles } from "@material-ui/core";
@@ -9,7 +9,11 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import SearchIcon from '@mui/icons-material/Search';
 
+import { UserContext } from './../contexts/UserContext';
+
 // withStyles & makeStyles
+
+
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -29,12 +33,22 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export default function Header() {
-
+export default function Header(props) {
+    const {remove} = props
+    const msg = useContext(UserContext)
+    //console.log('Context - ' , remove, msg)
+   
+    
+    
+    
     const classes = useStyles();
 
     return (
-     
+        <>
+        {/* <div style={{color: theme.syntax, background: theme.bg}} >
+                <p>Antonio Calmon </p>
+        </div> */}
+        
         <AppBar position="static" className={classes.root}>
             <Toolbar>
                 <Grid container 
@@ -66,5 +80,6 @@ export default function Header() {
                 </Grid>
             </Toolbar>
         </AppBar>
+    </>
     )
 }

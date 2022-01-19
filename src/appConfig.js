@@ -1,3 +1,69 @@
+import Avatar from '@mui/material/Avatar';
+import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SecurityIcon from '@mui/icons-material/Security';
+
+ 
+const handleDeleteRow = (e, params) => {
+    const selectedIDs = new Set([params.id]);
+    //setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
+    console.log("Selected Ids", selectedIDs);
+    return selectedIDs;
+};
+
+
+function stringToColor(string) {
+    let hash = 0;
+    let i;
+
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+        hash = string.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    let color = '#';
+
+    for (i = 0; i < 3; i += 1) {
+        const value = (hash >> (i * 8)) & 0xff;
+        color += `00${value.toString(16)}`.substr(-2);
+    }
+    /* eslint-enable no-bitwise */
+
+    return color;
+}
+
+function stringAvatar(name) {
+    return {
+        sx: {
+            bgcolor: stringToColor(name),
+        },
+        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    };
+}
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+});
+
+// const usdPrice = {
+//     type: 'number',
+//     width: 130,
+//     valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
+//     cellClassName: 'font-tabular-nums',
+// };
+
+// const handleDeleteRow = (e, params) => {
+//     console.log('Delete Row ', params)
+//     const selectedIDs = new Set([params.id]);
+//     setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
+//     console.log("Selected Ids", selectedIDs);
+    
+// };
+
+
+
+
 function isValidSting(exposedName, options, property) {
     if (!options.hasOwnProperty(property)) {
         throw new Error(`Field: ${exposedName}, is missing property "${property}"`)
@@ -12,7 +78,36 @@ function isValidSting(exposedName, options, property) {
 }
 
 function isValidOptions(options) {
-    const validProperties = ['label', 'required', 'viewable', 'field', 'optionsApiExt', 'wishlist', 'checkout', 'headerName'];
+    const validProperties = [
+        'label', 
+        'required', 
+        'viewable', 
+        'field', 
+        'optionsApiExt', 
+        'wishlist', 
+        'checkout', 
+        'headerName', 
+        'headerAlign', 
+        'width', 
+        'editable', 
+        'hideable', 
+        'minWidth', 
+        'description', 
+        'renderCell', 
+        'headerClassName', 
+        'resizable', 
+        'sortable',
+        'valueGetter',
+        'renderHeader',
+        'valueOptions',
+        'getActions',
+        'valueFormatter',
+        'type',
+        'cellClassName',
+        'align',
+        'disableReorder',
+        'hide',
+    ];
     for (let property of Object.keys(options)) {
         if (!validProperties.includes(property)) {
             throw new Error(`Options Property: "${property}" is not an accepted property`)
@@ -574,9 +669,320 @@ appConfig.addField('website', {
     label: 'Website',
     field: 'website',
     headerName: 'Website',
-    // headerAlign: 'center',
-    // width: 150,
-    // editable: true,
+    headerAlign: 'center',
+    width: 150,
+    editable: true,
+})
+
+appConfig.addField('id', {
+    label: 'Id',
+    field: 'id',
+    headerName: 'ID ',
+    headerAlign: 'center',
+    align: 'center',
+    width: 90,
+    editable: true,
+    description: 'Id - Id of the record',
+})
+
+appConfig.addField('Avatar', {
+    label: 'avatar',
+    field: 'Avatar',
+    headerName: 'Avatar',
+    headerAlign: 'center',
+    hideable: false,
+    // flex: 1,
+    width: 90,
+    minWidth: 50,
+    editable: true,
+    description: 'Avatar - Initials of user name and lastname',
+    renderCell: (params) => (
+        <strong>
+            <Avatar
+                {...stringAvatar(params.row.name)}
+            >
+            </Avatar>
+        </strong>
+    )
+})
+
+appConfig.addField('name', {
+      label: 'Name',
+      field: 'name',
+      headerName: 'Name',
+      headerClassName: 'super-app-theme--header',
+      headerAlign: 'center',
+      width: 190,
+      minWidth: 100,
+      resizable: false,
+      editable: true,
+      sortable: true,    // Disable column sort
+      description: 'Name of the User',
+})
+
+appConfig.addField('subTotal', {
+    label: 'subTotal',
+    field: 'subTotal',
+    headerName: 'Subtotal',
+    type: 'number',
+    headerAlign: 'center',
+    align: 'center',
+    width: 130,
+    valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
+    cellClassName: 'font-tabular-nums',
+    //...usdPrice,
+    editable: true,
+    resizable: true,
+    //disableReorder: true,
+})
+
+appConfig.addField('company_bs', {
+    label: 'Slogan',
+    field: 'bs',
+    headerName: 'Slogan',
+    headerAlign: 'center',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 200,
+    valueGetter: (params) =>
+    params.row.company.bs
+})
+
+appConfig.addField('username', {
+    label: 'Username',
+    field: 'username',
+    headerName: 'Username',
+    headerAlign: 'center',
+    width: 150,
+    editable: true,
+})
+
+
+appConfig.addField('email', {
+    label: 'Email',
+    field: 'email',
+    headerName: 'Email',
+    headerAlign: 'center',
+    width: 210,
+    editable: true,
+})
+
+appConfig.addField('phone', {
+    label: 'Phone',
+    field: 'phone',
+    headerName: 'Phone',
+    headerAlign: 'center',
+    width: 200,
+    editable: true,
+})
+
+appConfig.addField('address_street', {
+    label: 'Street',
+    field: 'street',
+    headerName: 'Street',
+    headerAlign: 'center',
+    width: 150,
+    editable: true,
+    valueGetter: (params) =>
+    params.row.address.street,
+})
+
+appConfig.addField('address_geo', {
+    label: 'Geo',
+    field: 'geo',
+    headerName: 'Geo',
+    headerAlign: 'center',
+    width: 210,
+    editable: true,
+    valueGetter: (params) =>
+    `Lat:${params.row.address.geo.lat || ''} Lng:${params.row.address.geo.lng || ''}`,
+})
+
+appConfig.addField('address_suite', {
+    label: 'Suite',
+    field: 'suite',
+    headerName: 'Suite',
+    headerAlign: 'center',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 120,
+    valueGetter: (params) =>
+    params.row.address.suite
+})
+
+appConfig.addField('address_city', {
+    label: 'City',
+    field: 'city',
+    headerName: 'City',
+    headerAlign: 'center',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 120,
+    valueGetter: (params) =>
+    params.row.address.city
+})
+
+appConfig.addField('address_zipcode', {
+    label: 'Zipcode',
+    field: 'zipcode',
+    headerName: 'Zipcode',
+    headerAlign: 'center',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 90,
+    valueGetter: (params) =>
+    params.row.address.zipcode
+})
+
+appConfig.addField('company_name', {
+    label: 'Company',
+    field: 'company',
+    headerName: 'Company',
+    headerAlign: 'center',
+    width: 150,
+    editable: true,
+    renderHeader: (params: GridColumnHeaderParams) => (
+    <strong>
+        {'Company '}
+        <span role="img" aria-label="enjoy">
+        🏦
+        </span>
+        
+    </strong>
+    ),
+    valueGetter: (params) =>
+    params.row.company.name
+})
+
+appConfig.addField('company_bs', {
+    label: 'Slogan',
+    field: 'bs',
+    headerName: 'Slogan',
+    headerAlign: 'center',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 200,
+    valueGetter: (params) =>
+    params.row.company.bs
+})
+
+appConfig.addField('company_catchPhrase', {
+    label: 'Phrase',
+    field: 'catchPhrase',
+    headerName: 'Phrase',
+    headerAlign: 'center',
+    description: 'This column has a value getter and is not sortable.',
+    sortable: false,
+    width: 250,
+    valueGetter: (params) =>
+    params.row.company.catchPhrase
+})
+
+appConfig.addField('country', {
+    label: 'Country',
+    field: 'country',
+    type: 'singleSelect',
+    headerAlign: 'center',
+    width: 120,
+    valueOptions: [
+    'Bulgaria',
+    'Netherlands',
+    'France',
+    'United Kingdom',
+    'Spain',
+    'Brazil',
+    ],
+    editable: true,
+})
+
+appConfig.addField('discount', {
+    label: 'Discount',
+    field: 'discount',
+    type: 'singleSelect',
+    headerAlign: 'center',
+    width: 120,
+    editable: true,
+    valueOptions: ({ row }) => {
+    if (row === undefined) {
+        return ['EU-resident', 'junior'];
+    }
+    const options = [];
+    if (!['United Kingdom', 'Brazil'].includes(row.country)) {
+        options.push('EU-resident');
+    }
+    if (['Bulgaria'].includes(row.country)) {
+        options.push('Bulgary anniversary');
+    }
+    if (row.age < 27) {
+        options.push('junior');
+    }
+    if (row.date === '10/10/2010') {
+        options.push('Birth premium date')
+    }
+    return options;
+    },
+})
+
+appConfig.addField('lastLogin', {
+    label: 'LastLogin',
+    field: 'lastLogin',
+    type: 'dateTime',
+    headerAlign: 'center',
+    editable: true,
+    width: 180,
+    valueGetter: ({ value }) => value && new Date(value),
+})
+
+appConfig.addField('Account', {
+    label: 'Account',
+    field: 'Account',
+    cellClassName: 'super-app-theme--cell',
+    headerAlign: 'center',
+    width: 90,
+    editable: true,
+    hide: false,
+    renderCell: (params) => (
+    <GridActionsCellItem
+        icon={<DeleteIcon />}
+        label='Del'
+        onClick={(e) => {handleDeleteRow(e, params)}}
+        showInMenu />
+    ),
+})
+
+appConfig.addField('total', {
+    label: 'Total',
+    field: 'total',
+    headerName: 'Total',
+    headerAlign: 'center',
+    align: 'center',
+    type: 'number',
+    width: 130,
+    valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
+    cellClassName: 'font-tabular-nums',
+    //...usdPrice,
+    editable: true,
+    resizable: true,
+})
+
+appConfig.addField('actions', {
+    label: 'actions',
+    field: 'actions',
+    type: 'actions',
+    width: 80,
+    getActions: (params: GridRowParams) => [
+    <GridActionsCellItem
+        icon={<DeleteIcon />}
+        label="Delete"
+        //onClick={(e) => { handleDeleteRow(e, params) }}
+        showInMenu />,
+    <GridActionsCellItem
+        icon={<SecurityIcon />}
+        label="Toggle Admin"
+        onClick={() => console.log('security')}
+        showInMenu
+    />,
+    ]
 })
 
 

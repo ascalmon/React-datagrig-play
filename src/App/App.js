@@ -1,6 +1,6 @@
 
 import './App.css';
-import React, { useState, useEffect }  from 'react';
+import React, { useState, useEffect, useContext }  from 'react';
 import * as localForage from 'localforage';
 // eslint-disable-next-line 
 //import { GridToolbar, GridRowParams, useGridApiRef, GridToolbarExport, GridToolbarContainer } from '@mui/x-data-grid-pro';
@@ -50,7 +50,7 @@ import FormGroup from '@mui/material/FormGroup';
 
 import Typography from '@mui/material/Typography';
 
-
+import { UserContext } from './../contexts/UserContext';
 
 
 function TabPanel(props) {
@@ -138,6 +138,9 @@ const useStyles = makeStyles(theme => ({
 
 
 function App() {
+
+
+
 
   function stringToColor(string) {
     let hash = 0;
@@ -301,6 +304,7 @@ function App() {
     },
     {
       field: 'company',
+      headerName: 'Company',
       width: 150,
       editable: true,
       renderHeader: (params: GridColumnHeaderParams) => (
@@ -410,16 +414,27 @@ function App() {
     },
     {
       field: 'subTotal',
-      ...usdPrice,
+      headerName: 'Subtotal',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'number',
       width: 130,
+      valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
+      cellClassName: 'font-tabular-nums',
+      //...usdPrice,
       editable: true,
       resizable: true,
-
     },
     {
       field: 'total',
-      ...usdPrice,
+      headerName: 'Total',
+      headerAlign: 'center',
+      align: 'center',
+      type: 'number',
       width: 130,
+      valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
+      cellClassName: 'font-tabular-nums',
+      //...usdPrice,
       editable: true,
       resizable: true,
     },
@@ -471,7 +486,8 @@ function App() {
 
 const ok = false;
 const [keysInUse, setKeysInUse] = useState([]);
-const [headers, setHeaders] = useState([]);
+
+const [newColumns, setNewColumns] = useState([])
 
   useEffect(() => {
     
@@ -489,6 +505,7 @@ const [headers, setHeaders] = useState([]);
             item['Account'] = 'Delete'
             item['subTotal'] = 0
             item['total'] = 0
+            item['actions'] = ''
           })
             setNewRows(response);
             utils.saveDataToDb('user', response)
@@ -506,21 +523,56 @@ const [headers, setHeaders] = useState([]);
         Object.keys(response[0]).map((item) => {
           if (typeof response[0][item] === 'object' & Object.keys(response[0][item]).length > 0) {
           Object.keys(response[0][item]).map((media) => {
-            array.push(media)
+            array.push(item + '_' + media)
           })
           } else {
             array.push(item)
           }
         })
-        console.log('Array of Headers', array)
-        setHeaders(array);
+        //console.log('Array of Headers', array)
 
-      localForage.keys().then(function (keys) { 
-        setKeysInUse(keys)
-      }).catch(function (err) {
-        console.log(err);
-      });
+        localForage.keys().then(function (keys) { 
+          setKeysInUse(keys)
+        }).catch(function (err) {
+          console.log(err);
+        });
+
+      const columnsOrder = { 'id': 0, 'name': 2, 'username': 3, 'email': 4, 'address_street': 7, 'address_suite': 9, 'address_city': 10, 'address_zipcode': 11, 'address_geo': 8, 'phone': 5, 'website': 6, 'company_name': 12, 'company_catchPhrase': 14, 'company_bs':13, 'Avatar':1, 'country':15, 'discount':16, 'lastLogin':17, 'Account':19, 'subTotal':20, 'total':21, 'actions':22}
+
+      // Reorder all columns according to columnOrder objects
+
+      let columnsReordered = []
+      Object.keys(columnsOrder).map((key) => {
+        //console.log('Item order', key, columnsOrder[key])
+        columnsReordered[columnsOrder[key]] = key
+      })
+      //console.log('Columns Reordered', columnsReordered)
+
+
+      let columnsAppConfig = [] // Store the column configuration
+      let obj = {}
+      if (columnsReordered.length > 0) {
+        columnsReordered.map((item) => {
+          //console.log('Item', item)
+          if (appConfig[item]) {
+            //console.log('Column Object', Object.keys(appConfig[item]))
+            Object.keys(appConfig[item]).map((param) => {
+              if (param !== 'optionsApiExt'){
+                //console.log('Param', param, appConfig[item][param], obj)
+                obj[param] = appConfig[item][param]
+              }
+            })
+            columnsAppConfig.push(obj);
+            obj = {}
+            //console.log('Item found', item)
+          }
+        })
+      }
+      
+      setNewColumns(columnsAppConfig)
+      console.log('Column ', columnsAppConfig);
     })
+
     // eslint-disable-next-line 
   }, []);
  
@@ -531,8 +583,7 @@ const [headers, setHeaders] = useState([]);
   const [removeRecords, setRemoveRecords] = useState(initialState)
   const [value, setValue] = React.useState(0);
 
-  console.log('appConfig', appConfig['website'].field)
-
+ 
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -567,7 +618,11 @@ const [headers, setHeaders] = useState([]);
     setNewRows(array);
   }
 
-  // utils.saveDataToDb('temp', 'Daniel')
+ 
+
+  // utils.saveDataToDb('temp', 'Daniel');
+
+  // utils.deleteFromDb('temp');
 
 
   // const CustomToolbar = () => {
@@ -586,11 +641,11 @@ const [headers, setHeaders] = useState([]);
   //   );
   // }
 
-
   
   return (
-    <>
-    <ThemeProvider theme={theme}>
+  
+
+    <UserContext.Provider value={'UserContext variable'}>
     <div className={ classes.appMain }>
       <SideMenu 
         titleRow="Row Data"
@@ -607,7 +662,10 @@ const [headers, setHeaders] = useState([]);
         iconStorage={<Inventory2Icon fontSize="small" />}
         iconCol={<ViewColumnIcon fontSize="small" />}
       />
-      <Header className={ classes.root }/>
+      
+      <Header 
+        className={ classes.root }
+        remove={removeRecords} />
       <CssBaseline />
       
       <div style={{ height: 400, width: '100%' }}>
@@ -654,7 +712,6 @@ const [headers, setHeaders] = useState([]);
                 onSelectionModelChange={(newSelectionModel, detail) => {
                   console.log('Checkbox', newSelectionModel, detail.api.state)
                   setRemoveRecords(newSelectionModel);
-                  
                 }}
                 removeRecords={removeRecords}
                 components={{
@@ -701,11 +758,11 @@ const [headers, setHeaders] = useState([]);
                     className={classes.root}
                     autoHeight
                     rows={newRows}
-                    columns={columns}
+                    columns={newColumns}
                     loading={newRows.length === 0}
                     rowHeight={42}
                     checkboxSelection={true}
-                    disableSelectionOnClick={false}
+                    disableSelectionOnClick={true}
                     isRowSelectable={(params: GridRowParams) => params.row.id % 3 !== 0 && params.row.name !== 'Clementina DuBuque'}
                     //isRowSelectable={(params: GridRowParams) => params.row.name != 'Clementina DuBuque'}
                     isCellEditable={(params) => params.row.id % 2 === 0}   // Só edita idades pares de caracters
@@ -747,8 +804,8 @@ const [headers, setHeaders] = useState([]);
     </div>
 
     </div>
-      </ThemeProvider>
-    </>
+    </UserContext.Provider>
+
 
     
   

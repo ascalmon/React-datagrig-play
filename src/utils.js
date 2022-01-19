@@ -1,7 +1,7 @@
 
 
 // npm install localforage
-import * as localForage from 'localforage';
+import localforage, * as localForage from 'localforage';
 import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
 
 
@@ -23,7 +23,13 @@ import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, Gr
         return await localForage.getItem(key);
     }
 
-
+    export const deleteFromDb = async (key) => {
+        localforage.removeItem(key).then(() => {
+            console.log(`Key ${key} is cleared`)
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
 
 
    
