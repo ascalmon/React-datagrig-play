@@ -18,10 +18,10 @@ import SideMenu from '../components/SideMenu'
 import Header from '../components/Header'
 import PageHeader from '../components/PageHeader'
 import Employees from '../Pages/Employees/Employees'
+import GeneralData from '../components/GeneralData'
+import Money from '../components/Money'
 import * as utils from '../utils';
 import appConfig from '../appConfig';
-
-
 
 import { CssBaseline, makeStyles} from "@material-ui/core"
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -50,7 +50,7 @@ import FormGroup from '@mui/material/FormGroup';
 
 import Typography from '@mui/material/Typography';
 
-import { UserContext } from './../contexts/UserContext';
+//import { UserContextData } from './../contexts/UserContext';
 
 
 function TabPanel(props) {
@@ -138,9 +138,6 @@ const useStyles = makeStyles(theme => ({
 
 
 function App() {
-
-
-
 
   function stringToColor(string) {
     let hash = 0;
@@ -497,7 +494,7 @@ const [newColumns, setNewColumns] = useState([])
         resp.json().then(
           (response) => {
           response.map((item) => {
-            console.log('Item', item)
+            //console.log('Item', item)
             item['Avatar'] = {}
             item['country'] = 'Brazil'
             item['discount'] = ''
@@ -506,6 +503,7 @@ const [newColumns, setNewColumns] = useState([])
             item['subTotal'] = 0
             item['total'] = 0
             item['actions'] = ''
+            return true
           })
             setNewRows(response);
             utils.saveDataToDb('user', response)
@@ -528,6 +526,7 @@ const [newColumns, setNewColumns] = useState([])
           } else {
             array.push(item)
           }
+        return true
         })
         //console.log('Array of Headers', array)
 
@@ -538,7 +537,7 @@ const [newColumns, setNewColumns] = useState([])
         });
 
       const columnsOrder = { 'id': 0, 'name': 2, 'username': 3, 'email': 4, 'address_street': 7, 'address_suite': 9, 'address_city': 10, 'address_zipcode': 11, 'address_geo': 8, 'phone': 5, 'website': 6, 'company_name': 12, 'company_catchPhrase': 14, 'company_bs':13, 'Avatar':1, 'country':15, 'discount':16, 'lastLogin':17, 'Account':19, 'subTotal':20, 'total':21, 'actions':22}
-
+      
       // Reorder all columns according to columnOrder objects
 
       let columnsReordered = []
@@ -572,7 +571,7 @@ const [newColumns, setNewColumns] = useState([])
       setNewColumns(columnsAppConfig)
       console.log('Column ', columnsAppConfig);
     })
-
+  
     // eslint-disable-next-line 
   }, []);
  
@@ -645,7 +644,6 @@ const [newColumns, setNewColumns] = useState([])
   return (
   
 
-    <UserContext.Provider value={'UserContext variable'}>
     <div className={ classes.appMain }>
       <SideMenu 
         titleRow="Row Data"
@@ -665,7 +663,9 @@ const [newColumns, setNewColumns] = useState([])
       
       <Header 
         className={ classes.root }
-        remove={removeRecords} />
+        remove={removeRecords} 
+      />
+
       <CssBaseline />
       
       <div style={{ height: 400, width: '100%' }}>
@@ -681,122 +681,27 @@ const [newColumns, setNewColumns] = useState([])
             </Box>
              
             <TabPanel value={value} index={0}>
-              <div>
-                {/* <div>
-                  {JSON.stringify(newRows)}
-                </div> */}
-                <PageHeader
-                  title="Datagrid Pro Playground"
-                  subtitle="DataGrid functionalities"
-                  icon={<PeopleIcon fontSize='large' />}
-                />
-                </div>
-              <DataGridPro
-                // sortModel={sortModel}
-                // onSortModelChange={(model) => setSortModel(model)}
-                className={classes.root}
-                autoHeight
-                rows={newRows}
-                columns={columns}
-                // loading={rows.length }
-                rowHeight={42}
-                checkboxSelection={true}
-                disableSelectionOnClick={true}
-                //isRowSelectable={(params: GridRowParams) => params.row.id % 2 === 0}
-                // isRowSelectable={(params: GridRowParams) => params.row.firstName != 'Atenas'}
-                isCellEditable={(params) => params.row.id % 2 === 0}   // Só edita idades pares de caracters
-                pagination
-                pageSize={10}
-                rowsPerPageOptions={[10, 50, 100]}
-                onCellEditCommit={handleCellEditCommit}
-                onSelectionModelChange={(newSelectionModel, detail) => {
-                  console.log('Checkbox', newSelectionModel, detail.api.state)
-                  setRemoveRecords(newSelectionModel);
-                }}
-                removeRecords={removeRecords}
-                components={{
-                  Toolbar: GridToolbar,
-                }}
-                 
-                sx={{
-                  boxShadow: 2,
-                  border: 2,
-                  borderColor: 'primary.light',
-                  '& .MuiDataGrid-cell:hover': {
-                    color: 'primary.main', // hover cells blue
-                  },
-                }}
-                
+              <GeneralData 
+                handleCellEditCommit = {handleCellEditCommit}
+                columns = { columns }
+                newRows = { newRows }
+                handleSaveData = { handleSaveData }
+                handleDeleteRow = { handleDeleteRow }
               />
-                  <div className={classes.btn}>
-                  <Button
-                    color="primary"
-                    variant="contained"
-                    onClick={handleSaveData}
-                  >Save Data
-                  </Button>
-                    <Button size="small" onClick={(e) => {handleDeleteRow(e, 'btn')}}>
-                      Delete rows
-                    </Button>
-                </div>
             </TabPanel>
+
             <TabPanel value={value} index={1}>
               <Employees />
             </TabPanel>
+
             <TabPanel value={value} index={2}>
-                  <div>
-
-                    <PageHeader
-                      title="Datagrid Pro Playground"
-                      subtitle="DataGrid functionalities"
-                      icon={<PeopleIcon fontSize='large' />}
-                    />
-                  </div>
-                  <DataGridPro
-                    // sortModel={sortModel}
-                    // onSortModelChange={(model) => setSortModel(model)}
-                    className={classes.root}
-                    autoHeight
-                    rows={newRows}
-                    columns={newColumns}
-                    loading={newRows.length === 0}
-                    rowHeight={42}
-                    checkboxSelection={true}
-                    disableSelectionOnClick={true}
-                    isRowSelectable={(params: GridRowParams) => params.row.id % 3 !== 0 && params.row.name !== 'Clementina DuBuque'}
-                    //isRowSelectable={(params: GridRowParams) => params.row.name != 'Clementina DuBuque'}
-                    isCellEditable={(params) => params.row.id % 2 === 0}   // Só edita idades pares de caracters
-                    pagination
-                    pageSize={10}
-                    rowsPerPageOptions={[10, 50, 100]}
-                    onSelectionModelChange={(newSelectionModel, detail) => {
-                      console.log('Checkbox', newSelectionModel, detail);
-                      setRemoveRecords(newSelectionModel)
-                      
-                    }}
-                    removeRecords={removeRecords}
-                    components={{
-                      Toolbar: GridToolbar,
-                    }}
-
-                    sx={{
-                      boxShadow: 2,
-                      border: 2,
-                      borderColor: 'primary.light',
-                      '& .MuiDataGrid-cell:hover': {
-                        color: 'primary.main', // hover cells blue
-                      },
-                    }}
-
-                  />
-                  <div className={classes.btn}>
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      onClick={handleSaveData}
-                    >Save Data
-                    </Button>
-                  </div>
+              <Money 
+                handleCellEditCommit={handleCellEditCommit}
+                columns={ newColumns }
+                newRows={ newRows }
+                handleSaveData={handleSaveData}
+                handleDeleteRow={handleDeleteRow}
+              />
             </TabPanel>
 
         </div>
@@ -804,7 +709,7 @@ const [newColumns, setNewColumns] = useState([])
     </div>
 
     </div>
-    </UserContext.Provider>
+   
 
 
     

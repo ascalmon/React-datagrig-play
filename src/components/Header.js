@@ -9,7 +9,7 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import SearchIcon from '@mui/icons-material/Search';
 
-import { UserContext } from './../contexts/UserContext';
+
 
 // withStyles & makeStyles
 
@@ -35,11 +35,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function Header(props) {
     const {remove} = props
-    const msg = useContext(UserContext)
-    //console.log('Context - ' , remove, msg)
-   
-    
-    
     
     const classes = useStyles();
 

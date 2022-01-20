@@ -1,15 +1,16 @@
+import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
 
- 
-const handleDeleteRow = (e, params) => {
-    const selectedIDs = new Set([params.id]);
-    //setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
-    console.log("Selected Ids", selectedIDs);
-    return selectedIDs;
-};
+  
+// const handleDeleteRow = (e, params) => {
+//     const selectedIDs = new Set([params.id]);
+//     //setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
+//     console.log("Selected Ids", selectedIDs);
+//     return selectedIDs;
+// };
 
 
 function stringToColor(string) {
@@ -945,7 +946,7 @@ appConfig.addField('Account', {
     <GridActionsCellItem
         icon={<DeleteIcon />}
         label='Del'
-        onClick={(e) => {handleDeleteRow(e, params)}}
+        onClick={(e) => {console.log('Delete', e, params)}}
         showInMenu />
     ),
 })
@@ -974,7 +975,7 @@ appConfig.addField('actions', {
     <GridActionsCellItem
         icon={<DeleteIcon />}
         label="Delete"
-        //onClick={(e) => { handleDeleteRow(e, params) }}
+        onClick={(e) => { console.log('actions', e, params) }}
         showInMenu />,
     <GridActionsCellItem
         icon={<SecurityIcon />}

@@ -17,8 +17,6 @@ import DateFnsUtils from '@date-io/date-fns';
 
 import * as utils from '../../utils'
 
-
-
 const initialFValues = {
     id: 0,
     fullName: '',
@@ -44,6 +42,7 @@ const useStyles = makeStyles(theme => ({
         textTransform: 'none'
         }
     },
+ 
    
 }))
 
@@ -221,7 +220,7 @@ export default function EmployeeForm() {
 
                     <FormControl>
                         <FormControlLabel 
-                        control={<Checkbox defaultChecked />} 
+                        control={<Checkbox />} 
                         label="Permanent Employee" 
                         name="isPermanent"
                         color="primary"
@@ -242,7 +241,7 @@ export default function EmployeeForm() {
                     
                         <Button 
                             variant="contained"
-                            color="default"
+                            color="success"
                             size="large"
                             onClick={handleReset}>
                             Reset
