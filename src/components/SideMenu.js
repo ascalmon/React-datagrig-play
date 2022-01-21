@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { makeStyles } from "@material-ui/core";
 // import TableRowsIcon from '@mui/icons-material/TableRows';
 import { Card } from '@mui/material'
 import Typography from '@mui/material/Typography';
+import { TableContext } from '../contexts/TableContext';
 // withStyles & makeStyles
 
 const useStyles= makeStyles(theme => ({
@@ -44,6 +45,7 @@ const useStyles= makeStyles(theme => ({
 export default function SideMenu(props) {
 
     const { titleRow, subtitleRow, numberRow, iconRow, titleCol, subtitleCol, numberCol, iconCol, titleForage, status, subtitle3, keysInUse, iconStorage  } = props;
+    const { contextColumns } = useContext(TableContext)
     const classes = useStyles();
  
     return (
@@ -82,7 +84,7 @@ export default function SideMenu(props) {
                         <Typography
                             variant="subtitle2"
                             component="div">
-                            {subtitleCol}-{numberCol}
+                            {subtitleCol}-{contextColumns.length}
                         </Typography>
                     </div>
                 </Card>

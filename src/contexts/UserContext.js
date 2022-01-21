@@ -1,30 +1,21 @@
 import appConfig from './../appConfig'
-
-import React, { Component } from 'react';
-
-export default class UserContextData extends Component {
-    constructor() {
-        super()
-
-        const getDataComp = (data) => {
-            return data
-        }
-
-        this.state = {
-            rowState: [],
-            ok: false,
-            getData: getDataComp
-        }
-    }
+import React, { createContext, Component } from 'react';
 
 
-  render() {
-    return 
-  
-  
-   
-  }
+const getData = (data) => {
+  return ( data )
 }
+
+
+
+const initialValue = {
+  teste: 'Antonio',
+  newValue: ['one', 'two', 'three'],
+  getData: getData,
+}
+
+export const UserContext = createContext(initialValue)
+
 
 
 

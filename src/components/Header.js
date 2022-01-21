@@ -9,6 +9,8 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import SearchIcon from '@mui/icons-material/Search';
 
+import { UserContext } from '../contexts/UserContext';
+
 
 
 // withStyles & makeStyles
@@ -34,16 +36,16 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Header(props) {
-    const {remove} = props
     
     const classes = useStyles();
-
+    // const { teste, newValue } = useContext(UserContext)
+    // console.log('Teste', teste, newValue)
     return (
         <>
         {/* <div style={{color: theme.syntax, background: theme.bg}} >
                 <p>Antonio Calmon </p>
         </div> */}
-        
+       
         <AppBar position="static" className={classes.root}>
             <Toolbar>
                 <Grid container 
@@ -75,6 +77,7 @@ export default function Header(props) {
                 </Grid>
             </Toolbar>
         </AppBar>
+        
     </>
     )
 }

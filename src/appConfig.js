@@ -4,13 +4,6 @@ import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, Gr
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
 
-  
-// const handleDeleteRow = (e, params) => {
-//     const selectedIDs = new Set([params.id]);
-//     //setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
-//     console.log("Selected Ids", selectedIDs);
-//     return selectedIDs;
-// };
 
 
 function stringToColor(string) {
@@ -46,23 +39,6 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
 });
-
-// const usdPrice = {
-//     type: 'number',
-//     width: 130,
-//     valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
-//     cellClassName: 'font-tabular-nums',
-// };
-
-// const handleDeleteRow = (e, params) => {
-//     console.log('Delete Row ', params)
-//     const selectedIDs = new Set([params.id]);
-//     setNewRows((r) => r.filter((x) => !selectedIDs.has(x.id)));
-//     console.log("Selected Ids", selectedIDs);
-    
-// };
-
-
 
 
 function isValidSting(exposedName, options, property) {
@@ -946,7 +922,7 @@ appConfig.addField('Account', {
     <GridActionsCellItem
         icon={<DeleteIcon />}
         label='Del'
-        onClick={(e) => {console.log('Delete', e, params)}}
+        //onClick={(e, params) => { return (handleDeleteRow(e, params))}}
         showInMenu />
     ),
 })
