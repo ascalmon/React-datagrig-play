@@ -180,7 +180,7 @@ function App() {
 const initialState = []
 const [newRows, setNewRows] = useState(initialState);
 
-const [ok, setOk] = useState(true)
+const [ok, setOk] = useState(false)
 
 // Keys for localForage
 const [keysInUse, setKeysInUse] = useState([]);
@@ -215,9 +215,11 @@ const [newColumns, setNewColumns] = useState([])
     }
     
     utils.getDataFromDb('user').then((response) => {
-      console.log('Use Effect App', response)
+      //console.log('Use Effect App', response)
       setNewRows(response);
     })
+
+    
   
     // eslint-disable-next-line 
   }, []);
@@ -248,6 +250,8 @@ const [newColumns, setNewColumns] = useState([])
   // utils.saveDataToDb('temp', 'Daniel');
 
   // utils.deleteFromDb('temp');
+
+  // utils.deleteFromDb('newUser');
 
 
   // const CustomToolbar = () => {
@@ -312,11 +316,10 @@ const [newColumns, setNewColumns] = useState([])
               <TableContextProvider>
               <GeneralData 
                 handleCellEditCommit = {handleCellEditCommit}
-               
                 newRows = { newRows.length > 0 ? newRows : []}
-         
+                keysInUse={keysInUse}
+                setKeysInUse={setKeysInUse}
                 setNewRows = { setNewRows }
-            
               />
               </TableContextProvider>
             </TabPanel>

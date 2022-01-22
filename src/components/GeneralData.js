@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import * as localForage from 'localforage';
 import { useGridApiRef, DataGridPro } from '@mui/x-data-grid-pro';
 import PageHeader from '../components/PageHeader';
 import { CssBaseline, makeStyles } from "@material-ui/core";
@@ -64,11 +65,20 @@ const useStyles = makeStyles(theme => ({
 
 function GeneralData(props) {
 
-    
+    const { keyInUse, setKeysInUse} = props;
 
     const { contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose } = useContext(TableContext)
 
     const { open, vertical, horizontal } = state;
+
+    useEffect(() => {
+        localForage.keys().then(function (keys) {
+            setKeysInUse(keys)
+        }).catch(function (err) {
+            console.log(err);
+        });
+    },[])
+
 
     const action = (
         <React.Fragment>

@@ -90,9 +90,6 @@ function Money(props) {
 
     useEffect(() => {
         console.log('Money mounting')
-        // utils.getDataFromDb('user').then((response) => {
-        //     console.log('here', response)
-        //     setNewRows(response);
         if (newRows) {
             const response = newRows
             //if (appConfig) {
@@ -222,7 +219,7 @@ function Money(props) {
                 </Button>
                 <Snackbar
                     open={state.open}
-                    autoHideDuration={6000}
+                    autoHideDuration={2000}
                     onClose={handleClose}
                     message={msg}
                     action={action}
