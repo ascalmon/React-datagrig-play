@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { makeStyles } from "@material-ui/core";
@@ -8,8 +8,9 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import SearchIcon from '@mui/icons-material/Search';
-
 import { UserContext } from '../contexts/UserContext';
+
+
 
 
 
@@ -36,9 +37,17 @@ const useStyles = makeStyles(theme => ({
 }))
 
 export default function Header(props) {
-    
+
+    //console.log('Header - Props', props)
+
     const classes = useStyles();
-    // const { teste, newValue } = useContext(UserContext)
+
+    const { search, setSearch } = useContext(UserContext)
+
+    const handleSearchChange = (e) => {
+        e.preventDefault()
+        setSearch(e.target.value)
+    }
     // console.log('Teste', teste, newValue)
     return (
         <>
@@ -54,7 +63,9 @@ export default function Header(props) {
                         <InputBase 
                             className={classes.searchInput}
                             placeholder='Search topics' 
-                            startAdornment = {<SearchIcon fontSize='small'/> }  />
+                            startAdornment = {<SearchIcon fontSize='small'/> }
+                            value = { search }
+                            onChange={handleSearchChange}  />
                     </Grid>
                     <Grid item sm></Grid>
                     <Grid item >

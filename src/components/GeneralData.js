@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 
 import PeopleIcon from '@mui/icons-material/People';
 import { TableContext } from '../contexts/TableContext';
+import { UserContext } from '../contexts/UserContext';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -67,17 +68,55 @@ function GeneralData(props) {
 
     const { keyInUse, setKeysInUse} = props;
 
+    
+
     const { contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose } = useContext(TableContext)
 
     const { open, vertical, horizontal } = state;
 
+    const { row, dispatch, search, setSearch } = useContext(UserContext);
+
+    const { handleCellEditCommit, columns, newRows, setNewRows } = props;
+
+    const [filteredRows, setFilteredRows] = useState(newRows && newRows.length > 0 ? newRows : [])
+
+    //const caraca = dispatch({ type: 'SAVE_DATA', row: 'Caraca' })
+
     useEffect(() => {
+        setFilteredRows(newRows)
         localForage.keys().then(function (keys) {
             setKeysInUse(keys)
         }).catch(function (err) {
             console.log(err);
         });
     },[])
+
+    useEffect(() => {
+
+        if (search && search !== '') {
+            //console.log('Search Value General Data', search)
+            const values = Object.values(newRows)
+            let valueObjects = []
+            let querySearch = []
+            let filteredArray = []
+            values.map((value) => {
+                valueObjects = Object.values(value)
+                querySearch = valueObjects.filter((item) => {
+                    return typeof item === 'string' ? item.toLocaleLowerCase().includes(search.toLocaleLowerCase()) : false
+                })
+                if (querySearch.length > 0) {
+                    filteredArray.push(value)
+                }
+                
+            })
+            //console.log('FilteredArray', filteredArray)
+            setFilteredRows(filteredArray);
+        } else {
+            setFilteredRows(newRows)
+        }
+
+
+    }, [search])
 
 
     const action = (
@@ -97,9 +136,7 @@ function GeneralData(props) {
 
     const classes = useStyles();
 
-    const { handleCellEditCommit, columns, newRows, setNewRows } = props;
-
-    console.log('General Data Props', newRows);
+    //console.log('General Data Props', newRows);
 
   return (
 
@@ -117,7 +154,7 @@ function GeneralData(props) {
         // onSortModelChange={(model) => setSortModel(model)}
         className={classes.root}
         autoHeight
-        rows={ newRows }
+        rows={ filteredRows && filteredRows.length > 0 ? filteredRows : newRows }
         columns={contextColumns}
         // loading={rows.length }
         rowHeight={42}
@@ -138,6 +175,7 @@ function GeneralData(props) {
                 //setRemoveRecords([])
             }
         }}
+        
         components={{
             Toolbar: GridToolbar,
         }}

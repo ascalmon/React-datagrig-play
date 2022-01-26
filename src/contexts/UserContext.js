@@ -1,20 +1,23 @@
-import appConfig from './../appConfig'
-import React, { createContext, Component } from 'react';
+import React, { createContext, useState, useReducer } from 'react';
+import { rowReducer } from './../reducers/rowReducer'
+
+export const UserContext = createContext();
 
 
-const getData = (data) => {
-  return ( data )
+const UserContextProvider = (props) => {
+
+  const [row, dispatch] = useReducer(rowReducer, 'Antonio');
+
+  const [ search, setSearch ] = useState()
+
+  return (
+    <UserContext.Provider value={{row, dispatch, search, setSearch}} >
+      {props.children}
+    </UserContext.Provider>
+  )
 }
 
-
-
-const initialValue = {
-  teste: 'Antonio',
-  newValue: ['one', 'two', 'three'],
-  getData: getData,
-}
-
-export const UserContext = createContext(initialValue)
+export default UserContextProvider;
 
 
 

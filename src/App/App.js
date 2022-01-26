@@ -46,7 +46,7 @@ import Typography from '@mui/material/Typography';
 
 import TableContextProvider, { TableContext } from '../contexts/TableContext';
 import AppConfigContextProvider from '../contexts/AppConfigContext';
-import { AppConfigContext } from '../contexts/AppConfigContext';
+import UserContextProvider from '../contexts/UserContext';
 
 
 function TabPanel(props) {
@@ -61,7 +61,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box vomponent="div" sx={{ p: 3 }}>
+        <Box component="div" sx={{ p: 3 }}>
           <div>
           <Typography component="div">{children}</Typography>
           </div>
@@ -180,6 +180,8 @@ function App() {
 const initialState = []
 const [newRows, setNewRows] = useState(initialState);
 
+
+
 const [ok, setOk] = useState(false)
 
 // Keys for localForage
@@ -215,7 +217,7 @@ const [newColumns, setNewColumns] = useState([])
     }
     
     utils.getDataFromDb('user').then((response) => {
-      //console.log('Use Effect App', response)
+      console.log('Use Effect App', response)
       setNewRows(response);
     })
 
@@ -226,9 +228,10 @@ const [newColumns, setNewColumns] = useState([])
  
   const classes = useStyles();
   
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
+    event.preventDefault();
     setValue(newValue);
   };
 
@@ -274,17 +277,16 @@ const [newColumns, setNewColumns] = useState([])
   return (
     <>
    
-   
     <div className={ classes.appMain }>
       <TableContextProvider>
       <SideMenu 
         titleRow="Row Data"
         subtitleRow="Rows"
-        numberRow={newRows.length}
+        numberRow= { newRows.length }
         iconRow={<TableRowsIcon fontSize="small"/>}
         titleCol="Columns Data"
         subtitleCol="Columns"
-        // numberCol={columns.length}
+        //numberCol={columns.length}
         titleForage="Local Forage"
         status={ok}
         subtitle3="Status"
@@ -293,11 +295,12 @@ const [newColumns, setNewColumns] = useState([])
         iconCol={<ViewColumnIcon fontSize="small" />}
       />
       </TableContextProvider>
+        <UserContextProvider>
+        <Header 
+          className={ classes.root }
+        />
+        
       
-      <Header 
-        className={ classes.root }
-      />
-
       <CssBaseline />
       
       <div style={{ height: 400, width: '100%' }}>
@@ -311,21 +314,26 @@ const [newColumns, setNewColumns] = useState([])
                 <Tab label="Money" {...a11yProps(2)} />
               </Tabs>
             </Box>
-             
+            
             <TabPanel value={value} index={0}>
               <TableContextProvider>
-              <GeneralData 
-                handleCellEditCommit = {handleCellEditCommit}
-                newRows = { newRows.length > 0 ? newRows : []}
-                keysInUse={keysInUse}
-                setKeysInUse={setKeysInUse}
-                setNewRows = { setNewRows }
-              />
+               
+                  <GeneralData 
+                    handleCellEditCommit = {handleCellEditCommit}
+                    newRows = { newRows.length > 0 ? newRows : []}
+                    keysInUse={keysInUse}
+                    setKeysInUse={setKeysInUse}
+                    setNewRows = { setNewRows }
+                  
+                  />
+                  
               </TableContextProvider>
             </TabPanel>
-
+            
             <TabPanel value={value} index={1}>
-              <Employees />
+              <Employees 
+                theme = {theme}
+              />
             </TabPanel>
 
             <TabPanel value={value} index={2}>
@@ -344,6 +352,7 @@ const [newColumns, setNewColumns] = useState([])
         </div>
       </div>
     </div>
+    </UserContextProvider>
 
     </div>
     

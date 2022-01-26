@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import * as employeeService  from '../../services/employeeService'
 import { Grid, TextField, Select, InputLabel, MenuItem, FormHelperText} from '@mui/material';
 import { makeStyles } from "@material-ui/core";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 import Checkbox from '@mui/material/Checkbox';
 import Radio from '@mui/material/Radio';
@@ -29,6 +30,38 @@ const initialFValues = {
     isPermanent: false,
 }
 
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#333996",
+            light: "#3C44B126"
+        },
+        secondary: {
+            main: "#F83245",
+            light: "#F8324526"
+        },
+        default: {
+            main: "#9E9E9E",
+            light: "#0E0E0E"
+        },
+        background: {
+            default: "#F4F5FD"
+        }
+    },
+    overrides: {
+        MuiAppBar: {
+            root: {
+                transform: 'translateZ(0)',
+            }
+        }
+    },
+    props: {
+        MuiIconButton: {
+            disableRipple: true,
+        }
+    }
+});
+
 const useStyles = makeStyles(theme => ({
     root: {
         '& .MuiFormControl-root': {
@@ -41,6 +74,7 @@ const useStyles = makeStyles(theme => ({
         margin: theme.spacing(0.5),
         textTransform: 'none'
         }
+    
     },
  
    

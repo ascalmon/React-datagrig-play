@@ -8,6 +8,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
 
 import { AppConfigContext } from '../contexts/AppConfigContext';
+import { UserContext } from '../contexts/UserContext';
+
 import Button from '@mui/material/Button';
 
 import PeopleIcon from '@mui/icons-material/People';
@@ -71,9 +73,51 @@ function Money(props) {
    
    const { open, vertical, horizontal} = state
 
-   console.log('Vertical & Horizontal', vertical, horizontal, open)
+   //console.log('Vertical & Horizontal', vertical, horizontal, open)
 
     const [newColumns, setNewColumns] = useState([])
+
+    const { row, dispatch, search, setSearch } = useContext(UserContext);
+
+    const [filteredRows, setFilteredRows] = useState(newRows && newRows.length > 0 ? newRows : [])
+
+    //const caraca = dispatch({ type: 'SAVE_DATA', row: 'Caraca' })
+
+    useEffect(() => {
+        setFilteredRows(newRows)
+        localForage.keys().then(function (keys) {
+            setKeysInUse(keys)
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }, [])
+
+    useEffect(() => {
+
+        if (search && search !== '') {
+            //console.log('Search Value General Data', search)
+            const values = Object.values(newRows)
+            let valueObjects = []
+            let querySearch = []
+            let filteredArray = []
+            values.map((value) => {
+                valueObjects = Object.values(value)
+                querySearch = valueObjects.filter((item) => {
+                    return typeof item === 'string' ? item.toLocaleLowerCase().includes(search.toLocaleLowerCase()) : false
+                })
+                if (querySearch.length > 0) {
+                    filteredArray.push(value)
+                }
+
+            })
+            //console.log('FilteredArray', filteredArray)
+            setFilteredRows(filteredArray);
+        } else {
+            setFilteredRows(newRows)
+        }
+
+
+    }, [search])
 
     const action = (
         <React.Fragment>
@@ -89,7 +133,7 @@ function Money(props) {
     )
 
     useEffect(() => {
-        console.log('Money mounting')
+        //console.log('Money mounting')
         if (newRows) {
             const response = newRows
             //if (appConfig) {
@@ -147,7 +191,7 @@ function Money(props) {
                 }
 
                 setNewColumns(columnsAppConfig)
-                console.log('Column Money', columnsAppConfig);
+                //console.log('Column Money', columnsAppConfig);
             //}
         }
 
@@ -171,7 +215,7 @@ function Money(props) {
                 // onSortModelChange={(model) => setSortModel(model)}
                 className={classes.root}
                 autoHeight
-                rows={ newRows }
+                rows={ filteredRows }
                 columns={ newColumns }
                 loading={newRows.length === 0 }
                 rowHeight={42}
