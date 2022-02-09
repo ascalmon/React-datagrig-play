@@ -203,8 +203,8 @@ const [newColumns, setNewColumns] = useState([])
             item['discount'] = ''
             item['lastLogin'] = Date.now()
             item['Account'] = 'Delete'
-            item['subTotal'] = 0
-            item['total'] = 0
+            item['subTotal'] = {'id': '2000', 'value': 200}.id
+            item['total'] = { 'id': '1000', 'value': 100 }.value
             item['actions'] = ''
             return true
           })

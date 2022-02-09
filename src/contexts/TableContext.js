@@ -72,6 +72,7 @@ const TableContextProvider = (props) => {
         setState({ ...state, 'open': true });
     };
 
+
     const handleSaveData = (e) => {
         console.log('Handle Save Data Table Context')
         e.preventDefault();
@@ -89,7 +90,6 @@ const TableContextProvider = (props) => {
         setState({ ...state, 'open': false });
     };
     
-   
 
     const [ contextColumns, setContextColumns ] = useState(
         [
@@ -364,7 +364,7 @@ const TableContextProvider = (props) => {
 
   return (
   
-      <TableContext.Provider value={{ contextColumns, setContextColumns,  handleDeleteRow, removeRecords, setRemoveRecords, newRows, setNewRows, handleSaveData, handleClose, msg, state, setState }}>
+      <TableContext.Provider value={{ contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, newRows, setNewRows, handleSaveData, handleClose, msg, state, setState  }}>
           {props.children}
       </TableContext.Provider>
 

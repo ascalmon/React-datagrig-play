@@ -1,12 +1,15 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import * as localForage from 'localforage';
-import { useGridApiRef, DataGridPro } from '@mui/x-data-grid-pro';
+import { useGridApiRef, DataGridPro, useGridRootProps } from '@mui/x-data-grid-pro';
 import PageHeader from '../components/PageHeader';
 import { CssBaseline, makeStyles } from "@material-ui/core";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
-
+import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem, getGridStringOperators, getGridDateOperators, } from '@mui/x-data-grid-pro';
+import PropTypes from "prop-types";
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import { GridColDef } from '@mui/x-data-grid-pro';
 
 import PeopleIcon from '@mui/icons-material/People';
 import { TableContext } from '../contexts/TableContext';
@@ -14,6 +17,8 @@ import { UserContext } from '../contexts/UserContext';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+
+
 
 import * as utils from '../utils';
 
@@ -66,9 +71,160 @@ const useStyles = makeStyles(theme => ({
 
 function GeneralData(props) {
 
+  
+    const SUBMIT_FILTER_STROKE_TIME = 500;
+
+    function InputStringData(props) {
+        const { item, applyValue, focusElementRef = null } = props;
+
+        const filterTimeout = useRef();
+        const [filterValueState, setFilterValueState] = useState(item.value ?? '');
+        const [applying, setIsApplying] = useState(false);
+
+        useEffect(() => {
+            return () => {
+                clearTimeout(filterTimeout.current);
+            };
+        }, []);
+
+        useEffect(() => {
+            const itemValue = item.value ?? undefined;
+            setFilterValueState(itemValue);
+        }, [item.value]);
+
+        const updateFilterValue = (selData) => {
+            clearTimeout(filterTimeout.current);
+            setFilterValueState(selData);
+
+            setIsApplying(true);
+            filterTimeout.current = setTimeout(() => {
+                setIsApplying(false);
+                applyValue({ ...item, value: selData });
+            }, SUBMIT_FILTER_STROKE_TIME);
+        };
+
+        const handleFilterChange = (event) => {
+            const newData = event.target.value;
+            updateFilterValue(newData, filterValueState);
+        };
+
+        console.log('Item', item)
+
+        return (
+            <Box
+                sx={{
+                    display: 'inline-flex',
+                    flexDirection: 'row',
+                    alignItems: 'end',
+                    height: 48,
+                    pl: '20px',
+                }}
+            >
+                <TextField
+                    name="filter-input"
+                    placeholder={item.columnField.charAt(0).toUpperCase() + item.columnField.slice(1)}
+                    label={item.columnField.charAt(0).toUpperCase() + item.columnField.slice(1)}
+                    variant="standard"
+                    value={filterValueState ? filterValueState : ''}
+                    onChange={handleFilterChange}
+                    type="text"
+                    inputRef={focusElementRef}
+                    sx={{ mr: 2 }}
+                />
+            </Box>
+        );
+    }
+
+    // InputStringData.propTypes = {
+    //     applyValue: PropTypes.func.isRequired,
+    //     focusElementRef: PropTypes.oneOfType([
+    //         PropTypes.func,
+    //         PropTypes.shape({
+    //             current: PropTypes.any.isRequired,
+    //         }),
+    //     ]),
+    //     item: PropTypes.shape({
+    //         /**
+    //          * The column from which we want to filter the rows.
+    //          */
+    //         columnField: PropTypes.string.isRequired,
+    //         /**
+    //          * Must be unique.
+    //          * Only useful when the model contains several items.
+    //          */
+    //         id: PropTypes.oneOfType([ PropTypes.string]),
+    //         /**
+    //          * The name of the operator we want to apply.
+    //          */
+    //         operatorValue: PropTypes.string,
+    //         /**
+    //          * The filtering value.
+    //          * The operator filtering function will decide for each row if the row values is correct compared to this value.
+    //          */
+    //         value: PropTypes.any,
+    //     }).isRequired,
+    // };
+
+    const stringOnlyOperators = [
+        {
+            label: 'not equals to',
+            value: 'notEqualsTo',
+            getApplyFilterFn: (filterItem) => {
+                console.log('filterItem', filterItem)
+                if (
+                    !filterItem.columnField ||
+                    !filterItem.value ||
+                    !filterItem.operatorValue
+                ) {
+                    return null;
+                }
+
+                return ({ value }) => {
+                    return (
+                        value !== null &&
+                        value.toLowerCase() !== filterItem.value.toLowerCase()
+                    );
+                };
+            },
+            InputComponent: InputStringData,
+        },
+        {
+            label: 'no contains',
+            value: 'no_contains',
+            getApplyFilterFn: (filterItem) => {
+                if (
+                    !filterItem.columnField ||
+                    !filterItem.value ||
+                    !filterItem.operatorValue
+                ) {
+                    return null;
+                }
+
+                return ({ value }) => {
+                    return (
+                        value !== null &&
+                        !value.toLowerCase().includes(filterItem.value.toLowerCase())
+                    );
+                };
+            },
+            InputComponent: InputStringData,
+        }
+       
+    ];
+
     const { keyInUse, setKeysInUse} = props;
 
-    
+    // const [ filterModel, setFilterModel] = useState(
+    //     {
+    //     items: [
+    //         {
+    //             id: '1',
+    //             columnField: "name",
+    //             value: "",
+    //             operatorValue: "No Contains"
+    //         },
+    //     ]
+    // })
 
     const { contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose } = useContext(TableContext)
 
@@ -80,7 +236,36 @@ function GeneralData(props) {
 
     const [filteredRows, setFilteredRows] = useState(newRows && newRows.length > 0 ? newRows : [])
 
-    //const caraca = dispatch({ type: 'SAVE_DATA', row: 'Caraca' })
+
+ 
+    // Imports the default String operators
+    const filterOperators = getGridStringOperators()
+        .filter(
+            (operator) =>
+                //operator.value === "after" || operator.value === "before" || operator.value === "is"
+                operator.value !== null
+        )
+        .map((operator) => {
+            return {
+                ...operator
+            };
+        });
+    
+    const allOperators = stringOnlyOperators.concat(filterOperators)
+
+    // Insert filterOperators in the selected columns
+    contextColumns.map((value, index) => {
+        if (value.field === 'name') {
+            value['filterOperators'] = allOperators
+        }
+        if (value.field === 'username') {
+            value['filterOperators'] = allOperators
+        }
+        if (value.field === 'email') {
+            value['filterOperators'] = allOperators
+        }
+    })
+
 
     useEffect(() => {
         setFilteredRows(newRows)
@@ -177,9 +362,28 @@ function GeneralData(props) {
         }}
         
         components={{
-            Toolbar: GridToolbar,
+            //Toolbar: GridToolbar,
         }}
-            
+
+        // initialState={{
+        //     filter: {
+        //         filterModel: {
+        //             items: [
+        //                 {
+        //                     id: '1',
+        //                     columnField: "name",
+        //                     value: "",
+        //                     operatorValue: "caraca"
+        //                 },
+        //             ]
+        //         },
+        //     },
+        // }}
+   
+                
+        //filterModel={filterModel}
+       // onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}  
+
         sx={{
             boxShadow: 2,
             border: 2,
