@@ -88,7 +88,7 @@ function GeneralData(props) {
         }, []);
 
         useEffect(() => {
-            const itemValue = item.value ?? undefined;
+            const itemValue = item.value ?? '';
             setFilterValueState(itemValue);
         }, [item.value]);
 
