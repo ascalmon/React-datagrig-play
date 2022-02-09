@@ -108,8 +108,6 @@ function GeneralData(props) {
             updateFilterValue(newData, filterValueState);
         };
 
-        console.log('Item', item)
-
         return (
             <Box
                 sx={{
@@ -170,7 +168,6 @@ function GeneralData(props) {
             label: 'not equals to',
             value: 'notEqualsTo',
             getApplyFilterFn: (filterItem) => {
-                console.log('filterItem', filterItem)
                 if (
                     !filterItem.columnField ||
                     !filterItem.value ||
@@ -279,7 +276,6 @@ function GeneralData(props) {
     useEffect(() => {
 
         if (search && search !== '') {
-            //console.log('Search Value General Data', search)
             const values = Object.values(newRows)
             let valueObjects = []
             let querySearch = []
@@ -294,7 +290,6 @@ function GeneralData(props) {
                 }
                 
             })
-            //console.log('FilteredArray', filteredArray)
             setFilteredRows(filteredArray);
         } else {
             setFilteredRows(newRows)
@@ -317,11 +312,7 @@ function GeneralData(props) {
         </React.Fragment>
     )
 
-    //console.log('General Data Props', props)
-
     const classes = useStyles();
-
-    //console.log('General Data Props', newRows);
 
   return (
 
@@ -354,7 +345,6 @@ function GeneralData(props) {
         onCellEditCommit={handleCellEditCommit}
         onSelectionModelChange={(newSelectionModel, detail) => {
             if (newSelectionModel.length > 0) {
-                console.log('Checkbox General Data', newSelectionModel, detail.api.state)
                 setRemoveRecords(newSelectionModel);
             } else {
                 //setRemoveRecords([])
