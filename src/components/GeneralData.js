@@ -69,7 +69,34 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
+
+
 function GeneralData(props) {
+
+    // Enable Single Click Editing
+
+    
+    const apiRef = useGridApiRef();
+    const { selectedCellParams, setSelectedCellParams } = props;
+
+    const handleCellClick = async () => {
+        console.log('handle cell click')
+        if (!selectedCellParams) {
+            return;
+        }
+        const { id, field, cellMode } = selectedCellParams;
+        if (cellMode === 'edit') {
+            // Wait for the validation to run
+            const isValid = await apiRef.current.commitCellChange({ id, field });
+            if (isValid) {
+                apiRef.current.setCellMode(id, field, 'view');
+                setSelectedCellParams({ ...selectedCellParams, cellMode: 'view' });
+            }
+        } else {
+            apiRef.current.setCellMode(id, field, 'edit');
+            setSelectedCellParams({ ...selectedCellParams, cellMode: 'edit' });
+        }
+    };
 
   
     const SUBMIT_FILTER_STROKE_TIME = 500;
@@ -328,6 +355,8 @@ function GeneralData(props) {
         <DataGridPro
         // sortModel={sortModel}
         // onSortModelChange={(model) => setSortModel(model)}
+        onCellClick={handleCellClick}
+        apiRef={apiRef}
         className={classes.root}
         autoHeight
         rows={ filteredRows && filteredRows.length > 0 ? filteredRows : newRows }
@@ -352,7 +381,15 @@ function GeneralData(props) {
         }}
         
         components={{
-            //Toolbar: GridToolbar,
+            Toolbar: GridToolbar,
+        }}
+
+        componentsProps={{
+            toolbar: {
+                selectedCellParams,
+                apiRef,
+                setSelectedCellParams,
+            },
         }}
 
         // initialState={{
