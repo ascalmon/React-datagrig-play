@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import * as utils from '../utils';
 import * as localForage from 'localforage';
-import { DataGridPro } from '@mui/x-data-grid-pro';
+import { useGridApiRef, DataGridPro } from '@mui/x-data-grid-pro';
 import PageHeader from '../components/PageHeader';
 import { CssBaseline, makeStyles } from "@material-ui/core";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -64,6 +64,30 @@ const useStyles = makeStyles(theme => ({
 }))
 
 function Money(props) {
+
+    const apiRef = useGridApiRef();
+    const { selectedCellParams, setSelectedCellParams } = props;
+
+    const handleCellClick = async () => {
+        console.log('handle cell click')
+        if (!selectedCellParams) {
+            return;
+        }
+        const { id, field, cellMode } = selectedCellParams;
+        if (cellMode === 'edit') {
+            // Wait for the validation to run
+            const isValid = await apiRef.current.commitCellChange({ id, field });
+            if (isValid) {
+                apiRef.current.setCellMode(id, field, 'view');
+                setSelectedCellParams({ ...selectedCellParams, cellMode: 'view' });
+            }
+        } else {
+            apiRef.current.setCellMode(id, field, 'edit');
+            setSelectedCellParams({ ...selectedCellParams, cellMode: 'edit' });
+        }
+    };
+
+
 
     const classes = useStyles();
 
@@ -215,6 +239,8 @@ function Money(props) {
                 // onSortModelChange={(model) => setSortModel(model)}
                 className={classes.root}
                 autoHeight
+                onCellClick={handleCellClick}
+                apiRef={apiRef}
                 rows={ filteredRows }
                 columns={ newColumns }
                 loading={newRows.length === 0 }
@@ -236,11 +262,16 @@ function Money(props) {
                         //setRemoveRecords([]);
                     }
                 }}
-                
                 components={{
                     Toolbar: GridToolbar,
                 }}
-
+                componentsProps={{
+                    toolbar: {
+                        selectedCellParams,
+                        apiRef,
+                        setSelectedCellParams,
+                    },
+                }}
                 sx={{
                     boxShadow: 2,
                     border: 2,
