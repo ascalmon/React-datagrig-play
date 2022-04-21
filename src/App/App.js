@@ -190,7 +190,7 @@ const [newColumns, setNewColumns] = useState([])
 
 
   useEffect(() => {
-    
+    console.log('Use Effect Mounted', newRows, ok)
     if (!newRows || ok) {
     utils.getDataFromApi()
       .then((resp) => {
@@ -221,8 +221,6 @@ const [newColumns, setNewColumns] = useState([])
       setNewRows(response);
     })
 
-    
-  
     // eslint-disable-next-line 
   }, []);
  
@@ -236,11 +234,11 @@ const [newColumns, setNewColumns] = useState([])
   };
 
 
-  const handleCellEditCommit = (e:GridCellEditCommitParams) => {
-    console.log('Cell Edit')
+  const handleCellEditCommit = (params) => {
+    console.log('Cell Edit', params)
     const array = newRows.map((selRow) => {
-      if (selRow.id === e.id) {
-        return {...selRow, [ e.field]: e.value}
+      if (selRow.id === params.id) {
+        return {...selRow, [ params.field]: params.value}
       } else {
         return {...selRow}
       }
@@ -282,7 +280,7 @@ const [newColumns, setNewColumns] = useState([])
       <SideMenu 
         titleRow="Row Data"
         subtitleRow="Rows"
-        numberRow= { newRows.length }
+        numberRow= { newRows.length  }
         iconRow={<TableRowsIcon fontSize="small"/>}
         titleCol="Columns Data"
         subtitleCol="Columns"

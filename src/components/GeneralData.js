@@ -1,10 +1,33 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useContext, useEffect, useRef, useCallback} from 'react';
 import * as localForage from 'localforage';
-import { useGridApiRef, DataGridPro, useGridRootProps } from '@mui/x-data-grid-pro';
+import { 
+    useGridApiRef, 
+    DataGridPro, 
+    useGridRootProps,
+ } from '@mui/x-data-grid-pro';
+import KeyboardNavigation from '@mui/x-data-grid-pro';
 import PageHeader from '../components/PageHeader';
 import { CssBaseline, makeStyles } from "@material-ui/core";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem, getGridStringOperators, getGridDateOperators, } from '@mui/x-data-grid-pro';
+
+import {
+    gridVisibleRowCountSelector,
+    gridVisibleColumnDefinitionsSelector,
+    gridVisibleSortedRowIdsSelector,
+} from '@mui/x-data-grid'
+
+import { 
+    GridToolbarContainer, 
+    GridToolbarExport, 
+    GridToolbar, 
+    GridRowParams, 
+    GridColumnHeaderParams, 
+    GridActionsCellItem, 
+    getGridStringOperators, 
+    getGridDateOperators,
+    GridEvents,
+} from '@mui/x-data-grid-pro';
+
 import PropTypes from "prop-types";
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
@@ -77,14 +100,38 @@ function GeneralData(props) {
 
     
     const apiRef = useGridApiRef();
-    const { selectedCellParams, setSelectedCellParams } = props;
+    const [selectedCellParams, setSelectedCellParams] = useState();
 
-    const handleCellClick = async () => {
-        console.log('handle cell click')
-        if (!selectedCellParams) {
-            return;
-        }
-        const { id, field, cellMode } = selectedCellParams;
+    const [coordinates, setCoordinates] = React.useState({
+        rowIndex: 0,
+        colIndex: 0,
+    });
+    //const [column, setColumn] = useState()
+
+   
+    useEffect(() => {
+        
+        const {rowIndex, colIndex } = coordinates;
+        if (rowIndex === 0 && colIndex === 0) {
+            //console.log( 'Start');
+        } else {
+            const id = gridVisibleSortedRowIdsSelector(apiRef)[rowIndex];
+            if (id) {
+                apiRef.current.scrollToIndexes(coordinates);
+                //console.log('UseEffectCoordinates column')
+                //const column = gridVisibleColumnDefinitionsSelector(apiRef)[colIndex];
+                const column = apiRef.current.getVisibleColumns()[colIndex];
+                apiRef.current.setCellFocus(id, column.field);
+                //console.log('Coordinate', rowIndex, colIndex, 'Id', id, 'Column', column.field)
+            }
+        }   
+    },[apiRef, coordinates])
+
+
+    const handleCellClick = async (param, event) => {
+        console.log('handle cell click ', param.value )
+        const { id, field, cellMode } = param;
+
         if (cellMode === 'edit') {
             // Wait for the validation to run
             const isValid = await apiRef.current.commitCellChange({ id, field });
@@ -96,6 +143,14 @@ function GeneralData(props) {
             apiRef.current.setCellMode(id, field, 'edit');
             setSelectedCellParams({ ...selectedCellParams, cellMode: 'edit' });
         }
+
+        const rowIndex = gridVisibleSortedRowIdsSelector(apiRef).findIndex(
+            (id) => id === param.id,
+        );
+        const colIndex = apiRef.current.state.columns.all.findIndex(
+            (column) => column === param.field,
+        );
+        setCoordinates({ rowIndex, colIndex });
     };
 
   
@@ -107,13 +162,7 @@ function GeneralData(props) {
         const filterTimeout = useRef();
         const [filterValueState, setFilterValueState] = useState(item.value ?? '');
         const [applying, setIsApplying] = useState(false);
-
-        useEffect(() => {
-            return () => {
-                clearTimeout(filterTimeout.current);
-            };
-        }, []);
-
+       
         useEffect(() => {
             const itemValue = item.value ?? '';
             setFilterValueState(itemValue);
@@ -290,7 +339,6 @@ function GeneralData(props) {
         }
     })
 
-
     useEffect(() => {
         setFilteredRows(newRows)
         localForage.keys().then(function (keys) {
@@ -301,7 +349,7 @@ function GeneralData(props) {
     },[])
 
     useEffect(() => {
-
+        
         if (search && search !== '') {
             const values = Object.values(newRows)
             let valueObjects = []
@@ -318,10 +366,9 @@ function GeneralData(props) {
                 
             })
             setFilteredRows(filteredArray);
-        } else {
+        } else if (search) {
             setFilteredRows(newRows)
         }
-
 
     }, [search])
 
@@ -340,10 +387,39 @@ function GeneralData(props) {
     )
 
     const classes = useStyles();
+  
+    const handleKeyboardAction = async (params, event) => {
+
+        const { id, field, cellMode, isEditable, colDef } = params
+
+        console.log('Event Code', event.code, params)
+        if (event.code === 'Enter' && cellMode === "edit") {
+            console.log('Entered')
+            
+            const maxColIndex = apiRef.current.state.columns.all.length - 1;
+            setCoordinates((coords) => {
+                console.log('Max Col', Math.min(maxColIndex, coords.colIndex + 1))
+                return {...coords, colIndex: Math.min(maxColIndex, coords.colIndex + 1)};
+            })
+
+            const isValid = await apiRef.current.commitCellChange({ id, field });
+            if (isValid) {
+                apiRef.current.setCellMode(id, field, 'view');
+                setSelectedCellParams({ ...selectedCellParams, cellMode: 'view' });
+            }
+        } else {
+            if (cellMode === 'view') {
+                if (colDef.type !== 'singleSelect' || colDef.type !== 'multSelect') {
+                    apiRef.current.setCellMode(params.id, params.field, 'edit');
+                } 
+            } 
+        }
+    }
 
   return (
 
     <div>
+        
         <div>
         <PageHeader
             title="Datagrid Pro Playground"
@@ -356,6 +432,7 @@ function GeneralData(props) {
         // sortModel={sortModel}
         // onSortModelChange={(model) => setSortModel(model)}
         onCellClick={handleCellClick}
+        onCellKeyDown={handleKeyboardAction}
         apiRef={apiRef}
         className={classes.root}
         autoHeight
@@ -367,11 +444,11 @@ function GeneralData(props) {
         disableSelectionOnClick={true}
         //isRowSelectable={(params: GridRowParams) => params.row.id % 2 === 0}
         // isRowSelectable={(params: GridRowParams) => params.row.firstName != 'Atenas'}
-        isCellEditable={(params) => params.row.id % 2 === 0}   // Só edita idades pares de caracters
+        isCellEditable={(params) => params.row.id % 2 === 0 }   // Só edita idades pares de caracters
         pagination
         pageSize={10}
         rowsPerPageOptions={[10, 50, 100]}
-        onCellEditCommit={handleCellEditCommit}
+        onCellEditCommit={(params,event) => handleCellEditCommit(params, event)}
         onSelectionModelChange={(newSelectionModel, detail) => {
             if (newSelectionModel.length > 0) {
                 setRemoveRecords(newSelectionModel);
@@ -384,13 +461,13 @@ function GeneralData(props) {
             Toolbar: GridToolbar,
         }}
 
-        componentsProps={{
-            toolbar: {
-                selectedCellParams,
-                apiRef,
-                setSelectedCellParams,
-            },
-        }}
+        // componentsProps={{
+        //     toolbar: {
+        //         selectedCellParams,
+        //         apiRef,
+        //         setSelectedCellParams,
+        //     },
+        // }}
 
         // initialState={{
         //     filter: {
@@ -444,6 +521,7 @@ function GeneralData(props) {
               />
 
         </div>
+         
     </div>
   )}
 
