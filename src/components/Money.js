@@ -65,15 +65,28 @@ const useStyles = makeStyles(theme => ({
 
 function Money(props) {
 
+    // console.log('Money Props', props)
     const apiRef = useGridApiRef();
-    const { selectedCellParams, setSelectedCellParams } = props;
 
-    const handleCellClick = async () => {
-        console.log('handle cell click')
-        if (!selectedCellParams) {
-            return;
+    const [ selectedCellParams, setSelectedCellParams] = useState('edit')
+
+    const { handleCellEditCommit, columns, newRows, setNewRows, keysInUse, setKeysInUse } = props
+
+    const handleCellClick = async (event) => {
+        console.log('handle cell click',  event)
+        const { id, field, cellMode } = event;
+        if (!selectedCellParams || event.colDef.field === 'autocomplete') {
+        //     if (event.colDef.field === 'autocomplete') {
+                
+        //         // apiRef.current.setEditCellValue({ id, field, inputValue });
+        //         // //await apiRef.current.commitCellChange({ id, field });
+        //         // apiRef.current.setCellMode(id, field, 'view');
+        //         // console.log('Autocomplete', apiRef)
+        //     }
+             return;
         }
-        const { id, field, cellMode } = selectedCellParams;
+        
+        console.log('Cell Mode', cellMode)
         if (cellMode === 'edit') {
             // Wait for the validation to run
             const isValid = await apiRef.current.commitCellChange({ id, field });
@@ -84,16 +97,15 @@ function Money(props) {
         } else {
             apiRef.current.setCellMode(id, field, 'edit');
             setSelectedCellParams({ ...selectedCellParams, cellMode: 'edit' });
+            
         }
     };
 
-
-
     const classes = useStyles();
 
-    const { handleCellEditCommit, columns, newRows, setNewRows, keysInUse, setKeysInUse } = props
+    
 
-   const { appConfig, contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose } = useContext(AppConfigContext)
+   const { appConfig, contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose, value, inputValue, id, field } = useContext(AppConfigContext)
    
    const { open, vertical, horizontal} = state
 
@@ -115,6 +127,13 @@ function Money(props) {
             console.log(err);
         });
     }, [])
+
+
+
+    useEffect(() => {
+        handleCellEditCommit({id: id, field: field, value: inputValue})
+        console.log('Effect Input Change', inputValue, id, field)
+    }, [inputValue, id, field, value])
 
     useEffect(() => {
 
@@ -180,7 +199,7 @@ function Money(props) {
                     console.log(err);
                 });
 
-                const columnsOrder = { 'id': 0, 'name': 2, 'username': 3, 'email': 4, 'address_street': 7, 'address_suite': 9, 'address_city': 10, 'address_zipcode': 11, 'address_geo': 8, 'phone': 5, 'website': 6, 'company_name': 12, 'company_catchPhrase': 14, 'company_bs': 13, 'Avatar': 1, 'country': 15, 'discount': 16, 'lastLogin': 17, 'Account': 19, 'subTotal': 20, 'total': 21, 'actions': 22 }
+                const columnsOrder = { 'id': 0, 'name': 2, 'username': 3, 'email': 4, 'address_street': 7, 'address_suite': 9, 'address_city': 10, 'address_zipcode': 11, 'address_geo': 8, 'phone': 5, 'website': 6, 'company_name': 12, 'company_catchPhrase': 14, 'company_bs': 13, 'Avatar': 1, 'country': 15, 'discount': 16, 'lastLogin': 17, 'Account': 19, 'subTotal': 20, 'total': 21, 'actions': 22, 'autocomplete':23 }
 
                 // Reorder all columns according to columnOrder objects
 
@@ -240,6 +259,7 @@ function Money(props) {
                 className={classes.root}
                 autoHeight
                 onCellClick={handleCellClick}
+                onCellEditCommit={handleCellEditCommit}
                 apiRef={apiRef}
                 rows={ filteredRows }
                 columns={ newColumns }
@@ -253,7 +273,6 @@ function Money(props) {
                 pagination
                 pageSize={10}
                 rowsPerPageOptions={[10, 50, 100]}
-                onCellEditCommit={handleCellEditCommit}
                 onSelectionModelChange={(newSelectionModel, detail) => {
                     if (newSelectionModel.length > 0) {
                         console.log('Checkbox Money', newSelectionModel, detail.api.state)

@@ -8,6 +8,7 @@ import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, Gr
 
     export const getDataFromApi = async() =>  {
         const data = await fetch('https://jsonplaceholder.typicode.com/users')
+        console.log('Data from DB', data)
         return data
     }
 

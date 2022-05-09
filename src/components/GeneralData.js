@@ -41,9 +41,8 @@ import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
-
-
 import * as utils from '../utils';
+import { NearMe } from '@mui/icons-material';
 
 
 const theme = createTheme({
@@ -97,9 +96,9 @@ const useStyles = makeStyles(theme => ({
 function GeneralData(props) {
 
     // Enable Single Click Editing
-
-    
-    const apiRef = useGridApiRef();
+    //console.log('Teste App Config', CerAppConfig('Caraca', { label: 'Vanessa' }, { label: 'Vanessa' }));
+  
+    const apiRef = useGridApiRef()
     const [selectedCellParams, setSelectedCellParams] = useState();
 
     const [coordinates, setCoordinates] = React.useState({
@@ -129,17 +128,19 @@ function GeneralData(props) {
 
 
     const handleCellClick = async (param, event) => {
-        console.log('handle cell click ', param.value )
-        const { id, field, cellMode } = param;
+        console.log('handle cell click ', event, param.field )
 
+        const { id, field, cellMode } = param;
         if (cellMode === 'edit') {
             // Wait for the validation to run
             const isValid = await apiRef.current.commitCellChange({ id, field });
+            console.log('Edit Mode', cellMode)
             if (isValid) {
                 apiRef.current.setCellMode(id, field, 'view');
                 setSelectedCellParams({ ...selectedCellParams, cellMode: 'view' });
             }
-        } else {
+        }  else {
+            console.log('View Mode', cellMode)
             apiRef.current.setCellMode(id, field, 'edit');
             setSelectedCellParams({ ...selectedCellParams, cellMode: 'edit' });
         }
@@ -421,18 +422,19 @@ function GeneralData(props) {
     <div>
         
         <div>
+
         <PageHeader
             title="Datagrid Pro Playground"
             subtitle="DataGrid functionalities"
             icon={<PeopleIcon fontSize='large' />}
         />
-        
+
         </div>
         <DataGridPro
         // sortModel={sortModel}
         // onSortModelChange={(model) => setSortModel(model)}
-        onCellClick={handleCellClick}
-        onCellKeyDown={handleKeyboardAction}
+        //onCellClick={handleCellClick}
+        //onCellKeyDown={handleKeyboardAction}
         apiRef={apiRef}
         className={classes.root}
         autoHeight
@@ -519,7 +521,7 @@ function GeneralData(props) {
                   anchorOrigin={{ vertical, horizontal }}
                   key={vertical + horizontal}
               />
-
+        
         </div>
          
     </div>

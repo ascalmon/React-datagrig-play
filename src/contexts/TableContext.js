@@ -4,6 +4,8 @@ import SecurityIcon from '@mui/icons-material/Security';
 import Avatar from '@mui/material/Avatar';
 import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
 import * as utils from '../utils';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 export const TableContext = createContext();
 
@@ -92,6 +94,9 @@ const TableContextProvider = (props) => {
         setState({ ...state, 'open': false });
     };
     
+    const options = ['Option 1', 'Option 2', 'Option 3'];
+    const [value, setValue] = React.useState(options[0]);
+    const [inputValue, setInputValue] = React.useState(options[0]);
 
     const [ contextColumns, setContextColumns ] = useState(
         [
@@ -275,6 +280,7 @@ const TableContextProvider = (props) => {
                 width: 120,
                 editable: true,
                 valueOptions: ({ row }) => {
+                    console.log('Discount', row)
                     if (row === undefined) {
                         return ['EU-resident', 'junior'];
                     }
@@ -316,6 +322,7 @@ const TableContextProvider = (props) => {
                         showInMenu />
                 ),
             },
+            
             {
                 field: 'subTotal',
                 headerName: 'Subtotal',

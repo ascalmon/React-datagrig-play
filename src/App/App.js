@@ -188,6 +188,10 @@ const [ok, setOk] = useState(false)
 const [keysInUse, setKeysInUse] = useState([]);
 const [newColumns, setNewColumns] = useState([])
 
+  function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
 
   useEffect(() => {
     console.log('Use Effect Mounted', newRows, ok)
@@ -206,6 +210,8 @@ const [newColumns, setNewColumns] = useState([])
             item['subTotal'] = {'id': '2000', 'value': 200}.id
             item['total'] = { 'id': '1000', 'value': 100 }.value
             item['actions'] = ''
+            item['autocomplete'] = 'Option ' + parseInt(getRandomArbitrary(1, 4))
+            //console.log('Item autocomplete', item, item['autocomplete'])
             return true
           })
             setNewRows(response);
@@ -235,6 +241,7 @@ const [newColumns, setNewColumns] = useState([])
 
 
   const handleCellEditCommit = (params) => {
+    if (params) {
     console.log('Cell Edit', params)
     const array = newRows.map((selRow) => {
       if (selRow.id === params.id) {
@@ -244,6 +251,8 @@ const [newColumns, setNewColumns] = useState([])
       }
     })
     setNewRows(array);
+    console.log('Commited Array', array)
+  }
   }
 
  
