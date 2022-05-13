@@ -180,8 +180,6 @@ function App() {
 const initialState = []
 const [newRows, setNewRows] = useState(initialState);
 
-
-
 const [ok, setOk] = useState(false)
 
 // Keys for localForage
@@ -241,17 +239,18 @@ const [newColumns, setNewColumns] = useState([])
 
 
   const handleCellEditCommit = (params) => {
-    if (params) {
-    console.log('Cell Edit', params)
-    const array = newRows.map((selRow) => {
-      if (selRow.id === params.id) {
-        return {...selRow, [ params.field]: params.value}
-      } else {
-        return {...selRow}
-      }
-    })
-    setNewRows(array);
-    console.log('Commited Array', array)
+     if (params) {
+      console.log('Handle Cell Edit', params, newRows)
+      const array = newRows.map((selRow) => {
+        if (selRow.id === params.id) {
+          console.log('selRow', selRow);
+          return {...selRow, [ params.field]: params.value}
+        } else {
+          return {...selRow}
+        }
+      })
+      setNewRows(array);
+      console.log('Commited Array', array)
   }
   }
 

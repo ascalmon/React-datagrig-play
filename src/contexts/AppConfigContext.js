@@ -10,8 +10,6 @@ import { useGridApiRef } from '@mui/x-data-grid-pro';
 
 export const AppConfigContext = createContext();
 
-
-
 const AppConfigContextProvider = (props) => {
 
     //console.log('AppConfigContext Props', props)
@@ -22,9 +20,8 @@ const AppConfigContextProvider = (props) => {
     const initialState = []
     const [removeRecords, setRemoveRecords] = useState(initialState)
     const [value, setValue] = useState();
-    const [inputValue, setInputValue] = useState('Caraca');
-    const [id, setId] = useState('1');
-    const [field, setField] = useState('autocomplete');
+    const [id, setId] = useState();
+    const [field, setField] = useState();
     const [state, setState] = useState({
         open: false,
         vertical: 'bottom',
@@ -61,10 +58,9 @@ const AppConfigContextProvider = (props) => {
     }
 
     const handleOnInputChange = (newValue, id, field) => {
-        setInputValue(newValue)
         setId(id)
         setField(field)
-        setValue(value)
+        setValue(newValue)
     }
 
     const handleClose = (event, reason) => {
@@ -286,7 +282,6 @@ const AppConfigContextProvider = (props) => {
         width: 200,
         editable: false,
         hide: false,
-      
         renderCell: (row, ...params) => (
             <Autocomplete
                 id="options-autocomplete"
@@ -295,12 +290,13 @@ const AppConfigContextProvider = (props) => {
                 getOptionLabel={(option) => option}
                 value={value}
                 defaultValue={row.value}
+                // onChange={(event, value) => {
+                //     setValue(value)
+                //     // row.value = value
+                // }}
                 onChange={(event, value) => {
-                    setValue(value)
-                    // row.value = value
-                }}
-                onInputChange={(event, newValue) => {
-                    handleOnInputChange(newValue, row.id, row.field)}}
+                    console.log('Onchange ', row)
+                    handleOnInputChange(value, row.id, row.field)}}
                 sx={{ width: 300 }}
                 renderInput={(params) => (
                     <TextField
@@ -548,7 +544,7 @@ const AppConfigContextProvider = (props) => {
 
 
   return (
-      <AppConfigContext.Provider value={{ appConfig, handleDeleteRow, removeRecords, setRemoveRecords, newRows, setNewRows, handleSaveData, handleClose, msg, state, setState, id, field, value, inputValue }}>
+      <AppConfigContext.Provider value={{ appConfig, handleDeleteRow, removeRecords, setRemoveRecords, newRows, setNewRows, handleSaveData, handleClose, msg, state, setState, id, field, value }}>
           {props.children}
       </AppConfigContext.Provider>
   )

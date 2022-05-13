@@ -76,13 +76,6 @@ function Money(props) {
         console.log('handle cell click',  event)
         const { id, field, cellMode } = event;
         if (!selectedCellParams || event.colDef.field === 'autocomplete') {
-        //     if (event.colDef.field === 'autocomplete') {
-                
-        //         // apiRef.current.setEditCellValue({ id, field, inputValue });
-        //         // //await apiRef.current.commitCellChange({ id, field });
-        //         // apiRef.current.setCellMode(id, field, 'view');
-        //         // console.log('Autocomplete', apiRef)
-        //     }
              return;
         }
         
@@ -104,8 +97,8 @@ function Money(props) {
     const classes = useStyles();
 
     
-
-   const { appConfig, contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose, value, inputValue, id, field } = useContext(AppConfigContext)
+   //console.log('Context', AppConfigContext._currentValue )
+   const { appConfig, contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose, value, id, field } = useContext(AppConfigContext)
    
    const { open, vertical, horizontal} = state
 
@@ -120,20 +113,21 @@ function Money(props) {
     //const caraca = dispatch({ type: 'SAVE_DATA', row: 'Caraca' })
 
     useEffect(() => {
+        console.log('Use Effect NewRows', newRows)
         setFilteredRows(newRows)
         localForage.keys().then(function (keys) {
             setKeysInUse(keys)
         }).catch(function (err) {
             console.log(err);
         });
-    }, [])
+    }, [newRows])
 
 
 
     useEffect(() => {
-        handleCellEditCommit({id: id, field: field, value: inputValue})
-        console.log('Effect Input Change', inputValue, id, field)
-    }, [inputValue, id, field, value])
+        handleCellEditCommit({id: id, field: field, value: value})
+        console.log('Effect Input Change', value, id, field)
+    }, [id, field, value])
 
     useEffect(() => {
 
@@ -271,8 +265,8 @@ function Money(props) {
                 // isRowSelectable={(params: GridRowParams) => params.row.firstName != 'Atenas'}
                 isCellEditable={(params) => params.row.id % 2 === 0}   // Só edita idades pares de caracters
                 pagination
-                pageSize={10}
-                rowsPerPageOptions={[10, 50, 100]}
+                pageSize={5}
+                rowsPerPageOptions={[5, 50, 100]}
                 onSelectionModelChange={(newSelectionModel, detail) => {
                     if (newSelectionModel.length > 0) {
                         console.log('Checkbox Money', newSelectionModel, detail.api.state)
@@ -284,13 +278,13 @@ function Money(props) {
                 components={{
                     Toolbar: GridToolbar,
                 }}
-                componentsProps={{
-                    toolbar: {
-                        selectedCellParams,
-                        apiRef,
-                        setSelectedCellParams,
-                    },
-                }}
+                // componentsProps={{
+                //     toolbar: {
+                //         selectedCellParams,
+                //         apiRef,
+                //         setSelectedCellParams,
+                //     },
+                // }}
                 sx={{
                     boxShadow: 2,
                     border: 2,
