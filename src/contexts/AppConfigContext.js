@@ -7,6 +7,7 @@ import * as utils from '../utils';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { useGridApiRef } from '@mui/x-data-grid-pro';
+import Checkbox from '@mui/material/Checkbox';
 
 export const AppConfigContext = createContext();
 
@@ -14,7 +15,7 @@ const AppConfigContextProvider = (props) => {
 
     //console.log('AppConfigContext Props', props)
 
-
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
     const { newRows, setNewRows } = props.children.props
 
     const initialState = []
@@ -27,6 +28,78 @@ const AppConfigContextProvider = (props) => {
         vertical: 'bottom',
         horizontal: 'center'
     });
+
+    const handleOnChange = (e, params) => {
+
+        e.stopPropagation();
+        console.log('Change checkbox', e, params, newRows)
+        if (Object.keys(params).length > 0) {
+            const rowId = params.id;
+            const fieldName = params.field;
+            const fieldValue = e.target.checked;
+            const cerRowsTemp = [...newRows];
+
+            console.log('Change', rowId, fieldName, fieldValue, cerRowsTemp)
+
+            // Get the values of every field in the selected row - Identify the row index
+            const rowIndex = newRows.findIndex(row => row.id === rowId);
+            // rowFielgs has one entire row of the table cerRows
+            let rowFields = newRows[rowIndex];
+            // const rowFields = cerRows[details.api.getRowIndex(rowId)];
+
+            if (typeof fieldValue !== 'boolean') {
+                console.log('Not Boolean - ', typeof fieldValue)
+            }
+
+                setNewRows(cerRowsTemp);
+                console.log('Cer Rows Updated', cerRowsTemp);
+
+
+                if (params.field === 'check') {
+                    // field is a boolena - cstExistingSpecBL
+                    if (fieldValue === true) {
+                        // Boolean value is true
+                        if (rowFields.hasOwnProperty(fieldName)) {
+                            console.log('Check True', rowFields)
+                            // Boolean field is a valid field
+                            //tririgaObj[fieldName] = fieldValue;
+                            rowFields[fieldName] = fieldValue;
+                            rowFields['subTotal'] = { 'id': '44400', 'value': 200 }.id;
+                            cerRowsTemp.splice(rowIndex, 1);
+                            console.log('Delete one', cerRowsTemp);
+                            cerRowsTemp.splice(rowIndex, 0 , rowFields);
+                            console.log('Boolean True - Cer Rows Updated', cerRowsTemp);
+                            setNewRows(cerRowsTemp);
+                            // All rows are updated
+
+                        }
+                    } else {
+                        // Boolean value is false
+                        if (rowFields.hasOwnProperty(fieldName)) {
+                            console.log('Check False', rowFields)
+                            // Boolean field is a valid field
+                            //tririgaObj[fieldName] = fieldValue;
+                            rowFields[fieldName] = fieldValue;
+                            rowFields['total'] = { 'id': '1000', 'value': 155 }.value;
+                            cerRowsTemp.splice(rowIndex, 1);
+                            console.log('Delete one', cerRowsTemp);
+                            cerRowsTemp.splice(rowIndex, 0, rowFields);
+                            console.log('Boolean False - Cer Rows Updated', cerRowsTemp);
+                            setNewRows(cerRowsTemp);
+
+                            // All rows are updated
+
+                        }
+                    }
+                }
+
+        }
+
+    }
+
+    // useEffect(() => {
+    //         console.log('NewRows Change Context', newRows)
+    // },[newRows])
 
     const [msg, setMsg] = useState();
     const options = ['Option 1', 'Option 2','Option 3'];
@@ -230,7 +303,7 @@ const AppConfigContextProvider = (props) => {
         headerAlign: 'center',
         width: 190,
         minWidth: 100,
-        resizable: false,
+        //resizable: false,
         editable: true,
         sortable: true,    // Disable column sort
         description: 'Name of the User',
@@ -248,7 +321,7 @@ const AppConfigContextProvider = (props) => {
         cellClassName: 'font-tabular-nums',
         //...usdPrice,
         editable: true,
-        resizable: true,
+        //resizable: true,
         //disableReorder: true,
     })
 
@@ -301,7 +374,7 @@ const AppConfigContextProvider = (props) => {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                       
+
                     />
                 )}
             />
@@ -392,7 +465,7 @@ const AppConfigContextProvider = (props) => {
         headerAlign: 'center',
         width: 150,
         editable: true,
-        renderHeader: (params: GridColumnHeaderParams) => (
+        renderHeader: (params) => (
             <strong>
                 {'Company '}
                 <span role="img" aria-label="enjoy">
@@ -460,7 +533,7 @@ const AppConfigContextProvider = (props) => {
             const options = [];
             console.log("Country - ", row.country, ['United Kingdom', 'Brazil'].includes(row.country))
             if (['United Kingdom', 'Brazil'].includes(row.country)) {
-               
+
                 options.push('EU-resident');
             }
             if (['Bulgaria'].includes(row.country)) {
@@ -503,6 +576,49 @@ const AppConfigContextProvider = (props) => {
         ),
     })
 
+    appConfig.addField('subTotal', {
+        label: 'Subtotal',
+        field: 'subTotal',
+        headerAlign: 'center',
+        align: 'center',
+        type: 'number',
+        width: 130,
+        valueFormatter: ({ value }) => currencyFormatter.format(Number(value)),
+        cellClassName: 'font-tabular-nums',
+        editable: true,
+        //resizable: true,
+    })
+    appConfig.addField('check', {
+        label: 'Model Number Unknown ?',
+        field: 'check',
+        type: 'boolean',
+        headerName: 'Model Number Unknown ?',
+        headerAlign: 'center',
+        align: 'center',
+        editable: true,
+        width: 250,
+        minWidth: 250,
+        description: 'Model Number Unknown ?'
+    })
+
+
+    // appConfig.addField('check', {
+    //         label: 'Check',
+    //         field: 'check',
+    //         headerName: 'Check',
+    //         headerAlign: 'center',
+    //         align: 'center',
+    //         type: 'boolean',
+    //         width: 90,
+    //         renderCell: (params) => (
+    //             < Checkbox {...label}
+    //             onClick={(e) => { handleOnChange(e, params) }}
+    //         />
+    //         ),
+    //         editable: true,
+    //         resizable: true,
+    // })
+
     appConfig.addField('total', {
         label: 'Total',
         field: 'total',
@@ -515,7 +631,7 @@ const AppConfigContextProvider = (props) => {
         cellClassName: 'font-tabular-nums',
         //...usdPrice,
         editable: true,
-        resizable: true,
+        //resizable: true,
     })
 
     appConfig.addField('actions', {

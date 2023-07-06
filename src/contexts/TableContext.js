@@ -1,4 +1,4 @@
-import React, { useState, createContext} from 'react';
+import React, { useState, createContext, useEffect} from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SecurityIcon from '@mui/icons-material/Security';
 import Avatar from '@mui/material/Avatar';
@@ -6,13 +6,23 @@ import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, Gr
 import * as utils from '../utils';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import Checkbox from '@mui/material/Checkbox';
+
 
 export const TableContext = createContext();
 
-const TableContextProvider = (props) => {   
-    
+const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+
+const TableContextProvider = (props) => {
+
     //console.log('Table Context Props', props.children.props)
-    const { newRows, setNewRows } = props.children.props
+    //const { newRows, setNewRows } = props.children.props
+    const [newRows, setNewRows] = useState()
+
+    useEffect(() => {
+        setNewRows(props.children.props.newRows);
+    },[])
+
     const initialState = []
     const [removeRecords, setRemoveRecords] = useState(initialState)
     const [state, setState] = useState({
@@ -59,6 +69,64 @@ const TableContextProvider = (props) => {
         currency: 'USD',
     });
 
+
+    // const handleOnChange = (e, params) => {
+    //     console.log('Change checkbox', e, params, newRows)
+    //     if (Object.keys(params).length > 0) {
+    //         const rowId = params.id;
+    //         const fieldName = params.field;
+    //         const fieldValue = e.target.checked;
+    //         const cerRowsTemp = newRows;
+    //         console.log('Change', rowId, fieldName, fieldValue, newRows)
+
+    //         // Get the values of every field in the selected row - Identify the row index
+    //         const rowIndex = newRows.findIndex(row => row.id === rowId);
+    //         // rowFielgs has one entire row of the table cerRows
+    //         const rowFields = newRows[rowIndex];
+    //         // const rowFields = cerRows[details.api.getRowIndex(rowId)];
+
+    //         if (typeof fieldValue !== 'boolean') {
+    //             console.log('Not Boolean - ', typeof fieldValue)
+    //         }
+
+    //         if (cerRowsTemp.length > 0) {
+    //             setNewRows(cerRowsTemp);
+    //             console.log('Cer Rows Updated', cerRowsTemp[rowIndex]);
+
+
+    //         if (params.field === 'caraca') {
+    //             // field is a boolena - cstExistingSpecBL
+    //             if (fieldValue === true) {
+    //                 // Boolean value is true
+    //                 if (rowFields.hasOwnProperty(fieldName)) {
+    //                     // Boolean field is a valid field
+    //                     //tririgaObj[fieldName] = fieldValue;
+    //                     rowFields[fieldName] = fieldValue;
+    //                     rowFields['subTotal'] = { value: null};
+    //                     cerRowsTemp[rowIndex] = rowFields;
+    //                     setNewRows(cerRowsTemp);
+    //                     // All rows are updated
+    //                     console.log('Boolean True - Cer Rows Updated', cerRowsTemp);
+    //                 }
+    //             } else {
+    //                 // Boolean value is false
+    //                 if (rowFields.hasOwnProperty(fieldName)) {
+    //                     // Boolean field is a valid field
+    //                     //tririgaObj[fieldName] = fieldValue;
+    //                     rowFields[fieldName] = fieldValue;
+    //                     rowFields['Total'] = { value: null };
+    //                     cerRowsTemp[rowIndex] = rowFields;
+    //                     setNewRows(cerRowsTemp);
+    //                     // All rows are updated
+    //                     console.log('Boolean False - Cer Rows Updated', cerRowsTemp);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     }
+
+    // }
+
     const handleDeleteRow = (e, params) => {
         console.log('Delete Row Table Context')
         if (params === 'btn' && removeRecords.length > 0) {
@@ -93,11 +161,10 @@ const TableContextProvider = (props) => {
 
         setState({ ...state, 'open': false });
     };
-    
+
     const options = ['Option 1', 'Option 2', 'Option 3'];
     const [value, setValue] = React.useState(options[0]);
     const [inputValue, setInputValue] = React.useState(options[0]);
-
     const [ contextColumns, setContextColumns ] = useState(
         [
             {
@@ -135,7 +202,7 @@ const TableContextProvider = (props) => {
                 headerAlign: 'center',
                 width: 190,
                 minWidth: 100,
-                resizable: false,
+                //resizable: false,
                 editable: true,
                 sortable: true,    // Disable column sort
             },
@@ -216,7 +283,7 @@ const TableContextProvider = (props) => {
                 headerName: 'Company',
                 width: 150,
                 editable: true,
-                renderHeader: (params: GridColumnHeaderParams) => (
+                renderHeader: (params) => (
                     <strong>
                         {'Company '}
                         <span role="img" aria-label="enjoy">
@@ -322,7 +389,7 @@ const TableContextProvider = (props) => {
                         showInMenu />
                 ),
             },
-            
+
             {
                 field: 'subTotal',
                 headerName: 'Subtotal',
@@ -334,7 +401,7 @@ const TableContextProvider = (props) => {
                 cellClassName: 'font-tabular-nums',
                 //...usdPrice,
                 editable: true,
-                resizable: true,
+                //resizable: true,
             },
             {
                 field: 'total',
@@ -347,13 +414,13 @@ const TableContextProvider = (props) => {
                 cellClassName: 'font-tabular-nums',
                 //...usdPrice,
                 editable: true,
-                resizable: true,
+                //resizable: true,
             },
             {
                 field: 'actions',
                 type: 'actions',
                 width: 80,
-                getActions: (params: GridRowParams) => [
+                getActions: (params) => [
                     <GridActionsCellItem
                         icon={<DeleteIcon />}
                         label="Delete"
@@ -369,10 +436,10 @@ const TableContextProvider = (props) => {
             },
 
         ])
-    
+
 
   return (
-  
+
       <TableContext.Provider value={{ contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, newRows, setNewRows, handleSaveData, handleClose, msg, state, setState  }}>
           {props.children}
       </TableContext.Provider>

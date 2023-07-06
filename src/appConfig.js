@@ -56,23 +56,23 @@ function isValidSting(exposedName, options, property) {
 
 function isValidOptions(options) {
     const validProperties = [
-        'label', 
-        'required', 
-        'viewable', 
-        'field', 
-        'optionsApiExt', 
-        'wishlist', 
-        'checkout', 
-        'headerName', 
-        'headerAlign', 
-        'width', 
-        'editable', 
-        'hideable', 
-        'minWidth', 
-        'description', 
-        'renderCell', 
-        'headerClassName', 
-        'resizable', 
+        'label',
+        'required',
+        'viewable',
+        'field',
+        'optionsApiExt',
+        'wishlist',
+        'checkout',
+        'headerName',
+        'headerAlign',
+        'width',
+        'editable',
+        'hideable',
+        'minWidth',
+        'description',
+        'renderCell',
+        'headerClassName',
+        'resizable',
         'sortable',
         'valueGetter',
         'renderHeader',
@@ -691,7 +691,7 @@ appConfig.addField('name', {
       headerAlign: 'center',
       width: 190,
       minWidth: 100,
-      resizable: false,
+      //resizable: false,
       editable: true,
       sortable: true,    // Disable column sort
       description: 'Name of the User',
@@ -709,7 +709,7 @@ appConfig.addField('subTotal', {
     cellClassName: 'font-tabular-nums',
     //...usdPrice,
     editable: true,
-    resizable: true,
+    //resizable: true,
     //disableReorder: true,
 })
 
@@ -818,13 +818,13 @@ appConfig.addField('company_name', {
     headerAlign: 'center',
     width: 150,
     editable: true,
-    renderHeader: (params: GridColumnHeaderParams) => (
+    renderHeader: (params) => (
     <strong>
         {'Company '}
         <span role="img" aria-label="enjoy">
         🏦
         </span>
-        
+
     </strong>
     ),
     valueGetter: (params) =>

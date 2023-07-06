@@ -2,7 +2,7 @@
 import './App.css';
 import React, { useState, useEffect, useContext }  from 'react';
 import * as localForage from 'localforage';
-// eslint-disable-next-line 
+// eslint-disable-next-line
 //import { GridToolbar, GridRowParams, useGridApiRef, GridToolbarExport, GridToolbarContainer } from '@mui/x-data-grid-pro';
 import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem, GridCellParams} from '@mui/x-data-grid-pro';
 
@@ -11,8 +11,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import TableRowsIcon from '@mui/icons-material/TableRows';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 
-import { DataGridPro } from '@mui/x-data-grid-pro';
-//import { DataGrid } from '@mui/x-data-grid';
+//import { DataGridPro } from '@mui/x-data-grid-pro';
+import { DataGridPro } from '@mui/x-data-grid';
 
 import SideMenu from '../components/SideMenu'
 import Header from '../components/Header'
@@ -66,7 +66,7 @@ function TabPanel(props) {
           <Typography component="div">{children}</Typography>
           </div>
         </Box>
-       
+
       )}
     </div>
   );
@@ -180,7 +180,7 @@ function App() {
 const initialState = []
 const [newRows, setNewRows] = useState(initialState);
 
-const [ok, setOk] = useState(false)
+const [ok, setOk] = useState(true)
 
 // Keys for localForage
 const [keysInUse, setKeysInUse] = useState([]);
@@ -206,6 +206,7 @@ const [newColumns, setNewColumns] = useState([])
             item['lastLogin'] = Date.now()
             item['Account'] = 'Delete'
             item['subTotal'] = {'id': '2000', 'value': 200}.id
+            item['check'] = true
             item['total'] = { 'id': '1000', 'value': 100 }.value
             item['actions'] = ''
             item['autocomplete'] = 'Option ' + parseInt(getRandomArbitrary(1, 4))
@@ -219,17 +220,17 @@ const [newColumns, setNewColumns] = useState([])
       })
       .catch((err) => console.log(err))
     }
-    
+
     utils.getDataFromDb('user').then((response) => {
       console.log('Use Effect App', response)
       setNewRows(response);
     })
 
-    // eslint-disable-next-line 
+    // eslint-disable-next-line
   }, []);
- 
+
   const classes = useStyles();
-  
+
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -243,7 +244,7 @@ const [newColumns, setNewColumns] = useState([])
       console.log('Handle Cell Edit', params, newRows)
       const array = newRows.map((selRow) => {
         if (selRow.id === params.id) {
-          console.log('selRow', selRow);
+          console.log('selRow', selRow, params.id, selRow, params.field, params.value);
           return {...selRow, [ params.field]: params.value}
         } else {
           return {...selRow}
@@ -254,7 +255,7 @@ const [newColumns, setNewColumns] = useState([])
   }
   }
 
- 
+
 
   // utils.saveDataToDb('temp', 'Daniel');
 
@@ -278,14 +279,14 @@ const [newColumns, setNewColumns] = useState([])
   //     </GridToolbarContainer>
   //   );
   // }
-  
-  
+
+
   return (
     <>
-   
+
     <div className={ classes.appMain }>
       <TableContextProvider>
-      <SideMenu 
+      <SideMenu
         titleRow="Row Data"
         subtitleRow="Rows"
         numberRow= { newRows.length  }
@@ -302,13 +303,13 @@ const [newColumns, setNewColumns] = useState([])
       />
       </TableContextProvider>
         <UserContextProvider>
-        <Header 
+        <Header
           className={ classes.root }
         />
-        
-      
+
+
       <CssBaseline />
-      
+
       <div style={{ height: 400, width: '100%' }}>
         <div style={{ display: 'flex', height: '100%' }}>
           <div style={{ flexGrow: 1 }}>
@@ -320,31 +321,31 @@ const [newColumns, setNewColumns] = useState([])
                 <Tab label="Money" {...a11yProps(2)} />
               </Tabs>
             </Box>
-            
+
             <TabPanel value={value} index={0}>
               <TableContextProvider>
-               
-                  <GeneralData 
+
+                  <GeneralData
                     handleCellEditCommit = {handleCellEditCommit}
                     newRows = { newRows.length > 0 ? newRows : []}
                     keysInUse={keysInUse}
                     setKeysInUse={setKeysInUse}
                     setNewRows = { setNewRows }
-                  
+
                   />
-                  
+
               </TableContextProvider>
             </TabPanel>
-            
+
             <TabPanel value={value} index={1}>
-              <Employees 
+              <Employees
                 theme = {theme}
               />
             </TabPanel>
 
             <TabPanel value={value} index={2}>
               <AppConfigContextProvider>
-              <Money 
+              <Money
                 handleCellEditCommit={handleCellEditCommit}
                 columns={ newColumns }
                 newRows={newRows.length > 0 ? newRows : []}
@@ -361,13 +362,13 @@ const [newColumns, setNewColumns] = useState([])
     </UserContextProvider>
 
     </div>
-    
+
     </>
-   
 
 
-    
-  
+
+
+
   );
 }
 

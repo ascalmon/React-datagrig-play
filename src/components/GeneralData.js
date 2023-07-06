@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect, useRef, useCallback} from 'react';
 import * as localForage from 'localforage';
-import { 
-    useGridApiRef, 
-    DataGridPro, 
-    useGridRootProps,
- } from '@mui/x-data-grid-pro';
-import KeyboardNavigation from '@mui/x-data-grid-pro';
+import {
+    useGridApiRef,
+    DataGrid,
+    //useGridRootProps,
+ } from '@mui/x-data-grid';
+//import KeyboardNavigation from '@mui/x-data-grid-pro';
 import PageHeader from '../components/PageHeader';
 import { CssBaseline, makeStyles } from "@material-ui/core";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -16,23 +16,23 @@ import {
     gridVisibleSortedRowIdsSelector,
 } from '@mui/x-data-grid'
 
-import { 
-    GridToolbarContainer, 
-    GridToolbarExport, 
-    GridToolbar, 
-    GridRowParams, 
-    GridColumnHeaderParams, 
-    GridActionsCellItem, 
-    getGridStringOperators, 
+import {
+    GridToolbarContainer,
+    GridToolbarExport,
+    GridToolbar,
+    GridRowParams,
+    GridColumnHeaderParams,
+    GridActionsCellItem,
+    getGridStringOperators,
     getGridDateOperators,
     GridEvents,
-} from '@mui/x-data-grid-pro';
+} from '@mui/x-data-grid';
 
 import PropTypes from "prop-types";
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { GridColDef } from '@mui/x-data-grid-pro';
+//import { GridColDef } from '@mui/x-data-grid-pro';
 
 import PeopleIcon from '@mui/icons-material/People';
 import { TableContext } from '../contexts/TableContext';
@@ -95,9 +95,11 @@ const useStyles = makeStyles(theme => ({
 
 function GeneralData(props) {
 
+    console.log('General Data Props', props)
+
     // Enable Single Click Editing
     //console.log('Teste App Config', CerAppConfig('Caraca', { label: 'Vanessa' }, { label: 'Vanessa' }));
-  
+
     const apiRef = useGridApiRef()
     const [selectedCellParams, setSelectedCellParams] = useState();
 
@@ -107,9 +109,9 @@ function GeneralData(props) {
     });
     //const [column, setColumn] = useState()
 
-   
+
     useEffect(() => {
-        
+
         const {rowIndex, colIndex } = coordinates;
         if (rowIndex === 0 && colIndex === 0) {
             //console.log( 'Start');
@@ -123,7 +125,7 @@ function GeneralData(props) {
                 apiRef.current.setCellFocus(id, column.field);
                 //console.log('Coordinate', rowIndex, colIndex, 'Id', id, 'Column', column.field)
             }
-        }   
+        }
     },[apiRef, coordinates])
 
 
@@ -154,7 +156,7 @@ function GeneralData(props) {
         setCoordinates({ rowIndex, colIndex });
     };
 
-  
+
     const SUBMIT_FILTER_STROKE_TIME = 500;
 
     function InputStringData(props) {
@@ -163,7 +165,7 @@ function GeneralData(props) {
         const filterTimeout = useRef();
         const [filterValueState, setFilterValueState] = useState(item.value ?? '');
         const [applying, setIsApplying] = useState(false);
-       
+
         useEffect(() => {
             const itemValue = item.value ?? '';
             setFilterValueState(itemValue);
@@ -283,7 +285,7 @@ function GeneralData(props) {
             },
             InputComponent: InputStringData,
         }
-       
+
     ];
 
     const { keyInUse, setKeysInUse} = props;
@@ -311,7 +313,7 @@ function GeneralData(props) {
     const [filteredRows, setFilteredRows] = useState(newRows && newRows.length > 0 ? newRows : [])
 
 
- 
+
     // Imports the default String operators
     const filterOperators = getGridStringOperators()
         .filter(
@@ -324,7 +326,7 @@ function GeneralData(props) {
                 ...operator
             };
         });
-    
+
     const allOperators = stringOnlyOperators.concat(filterOperators)
 
     // Insert filterOperators in the selected columns
@@ -350,7 +352,7 @@ function GeneralData(props) {
     },[])
 
     useEffect(() => {
-        
+
         if (search && search !== '') {
             const values = Object.values(newRows)
             let valueObjects = []
@@ -364,7 +366,7 @@ function GeneralData(props) {
                 if (querySearch.length > 0) {
                     filteredArray.push(value)
                 }
-                
+
             })
             setFilteredRows(filteredArray);
         } else if (search) {
@@ -388,7 +390,7 @@ function GeneralData(props) {
     )
 
     const classes = useStyles();
-  
+
     const handleKeyboardAction = async (params, event) => {
 
         const { id, field, cellMode, isEditable, colDef } = params
@@ -396,7 +398,7 @@ function GeneralData(props) {
         console.log('Event Code', event.code, params)
         if (event.code === 'Enter' && cellMode === "edit") {
             console.log('Entered')
-            
+
             const maxColIndex = apiRef.current.state.columns.all.length - 1;
             setCoordinates((coords) => {
                 console.log('Max Col', Math.min(maxColIndex, coords.colIndex + 1))
@@ -412,15 +414,15 @@ function GeneralData(props) {
             if (cellMode === 'view') {
                 if (colDef.type !== 'singleSelect' || colDef.type !== 'multSelect') {
                     apiRef.current.setCellMode(params.id, params.field, 'edit');
-                } 
-            } 
+                }
+            }
         }
     }
 
   return (
 
     <div>
-        
+
         <div>
 
         <PageHeader
@@ -430,7 +432,7 @@ function GeneralData(props) {
         />
 
         </div>
-        <DataGridPro
+        <DataGrid
         // sortModel={sortModel}
         // onSortModelChange={(model) => setSortModel(model)}
         //onCellClick={handleCellClick}
@@ -458,7 +460,7 @@ function GeneralData(props) {
                 //setRemoveRecords([])
             }
         }}
-        
+
         components={{
             Toolbar: GridToolbar,
         }}
@@ -485,10 +487,10 @@ function GeneralData(props) {
         //         },
         //     },
         // }}
-   
-                
+
+
         //filterModel={filterModel}
-       // onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}  
+       // onFilterModelChange={(newFilterModel) => setFilterModel(newFilterModel)}
 
         sx={{
             boxShadow: 2,
@@ -498,7 +500,7 @@ function GeneralData(props) {
             color: 'primary.main', // hover cells blue
             },
         }}
-        
+
         />
         <div className={classes.btn}>
             <Button
@@ -507,8 +509,8 @@ function GeneralData(props) {
             onClick={handleSaveData}
             >Save Data
             </Button>
-              
-       
+
+
             <Button size="small" onClick={(e) => {handleDeleteRow(e, 'btn')}}>
                 Delete rows
             </Button>
@@ -521,9 +523,9 @@ function GeneralData(props) {
                   anchorOrigin={{ vertical, horizontal }}
                   key={vertical + horizontal}
               />
-        
+
         </div>
-         
+
     </div>
   )}
 

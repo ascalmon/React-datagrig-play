@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
 import * as utils from '../utils';
 import * as localForage from 'localforage';
-import { useGridApiRef, DataGridPro } from '@mui/x-data-grid-pro';
+import { useGridApiRef, DataGrid } from '@mui/x-data-grid';
 import PageHeader from '../components/PageHeader';
 import { CssBaseline, makeStyles } from "@material-ui/core";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid-pro';
+import { GridToolbarContainer, GridToolbarExport, GridToolbar, GridRowParams, GridColumnHeaderParams, GridActionsCellItem } from '@mui/x-data-grid';
 
 import { AppConfigContext } from '../contexts/AppConfigContext';
 import { UserContext } from '../contexts/UserContext';
@@ -70,19 +70,23 @@ function Money(props) {
 
     const [ selectedCellParams, setSelectedCellParams] = useState('edit')
 
-    const { handleCellEditCommit, columns, newRows, setNewRows, keysInUse, setKeysInUse } = props
+    const { handleCellEditCommit, columns, newRows, setNewRows, keysInUse, setKeysInUse, change } = props
 
-    const handleCellClick = async (event) => {
-        console.log('handle cell click',  event)
-        const { id, field, cellMode } = event;
-        if (!selectedCellParams || event.colDef.field === 'autocomplete') {
+
+
+    const handleCellClick = async (params, event) => {
+        console.log('handle cell click',  event, params )
+        const { id, field, cellMode, value } = params;
+        if (!selectedCellParams || params.colDef.field === 'autocomplete') {
+            console.log('handle cell click - Return')
              return;
         }
-        
+
         console.log('Cell Mode', cellMode)
+
         if (cellMode === 'edit') {
             // Wait for the validation to run
-            const isValid = await apiRef.current.commitCellChange({ id, field });
+            const isValid = await apiRef.current.commitCellChange({ id, field, value: value });
             if (isValid) {
                 apiRef.current.setCellMode(id, field, 'view');
                 setSelectedCellParams({ ...selectedCellParams, cellMode: 'view' });
@@ -90,16 +94,15 @@ function Money(props) {
         } else {
             apiRef.current.setCellMode(id, field, 'edit');
             setSelectedCellParams({ ...selectedCellParams, cellMode: 'edit' });
-            
         }
     };
 
     const classes = useStyles();
 
-    
+
    //console.log('Context', AppConfigContext._currentValue )
    const { appConfig, contextColumns, setContextColumns, handleDeleteRow, removeRecords, setRemoveRecords, handleSaveData, msg, state, setState, handleClose, value, id, field } = useContext(AppConfigContext)
-   
+
    const { open, vertical, horizontal} = state
 
    //console.log('Vertical & Horizontal', vertical, horizontal, open)
@@ -193,7 +196,7 @@ function Money(props) {
                     console.log(err);
                 });
 
-                const columnsOrder = { 'id': 0, 'name': 2, 'username': 3, 'email': 4, 'address_street': 7, 'address_suite': 9, 'address_city': 10, 'address_zipcode': 11, 'address_geo': 8, 'phone': 5, 'website': 6, 'company_name': 12, 'company_catchPhrase': 14, 'company_bs': 13, 'Avatar': 1, 'country': 15, 'discount': 16, 'lastLogin': 17, 'Account': 19, 'subTotal': 20, 'total': 21, 'actions': 22, 'autocomplete':23 }
+                const columnsOrder = { 'id': 0, 'name': 2, 'username': 3, 'email': 4, 'address_street': 7, 'address_suite': 9, 'address_city': 10, 'address_zipcode': 11, 'address_geo': 8, 'phone': 5, 'website': 6, 'company_name': 12, 'company_catchPhrase': 14, 'company_bs': 13, 'Avatar': 1, 'country': 15, 'discount': 16, 'lastLogin': 17, 'Account': 19, 'subTotal': 20, 'check': 21, 'total': 22, 'actions': 23, 'autocomplete':24 }
 
                 // Reorder all columns according to columnOrder objects
 
@@ -232,7 +235,7 @@ function Money(props) {
             //}
         }
 
-        // eslint-disable-next-line 
+        // eslint-disable-next-line
     }, []);
 
     return (
@@ -247,7 +250,7 @@ function Money(props) {
 
             </div>
 
-            <DataGridPro
+            <DataGrid
                 // sortModel={sortModel}
                 // onSortModelChange={(model) => setSortModel(model)}
                 className={classes.root}
@@ -265,8 +268,8 @@ function Money(props) {
                 // isRowSelectable={(params: GridRowParams) => params.row.firstName != 'Atenas'}
                 isCellEditable={(params) => params.row.id % 2 === 0}   // Só edita idades pares de caracters
                 pagination
-                pageSize={5}
-                rowsPerPageOptions={[5, 50, 100]}
+                pageSize={10}
+                rowsPerPageOptions={[10, 50, 100]}
                 onSelectionModelChange={(newSelectionModel, detail) => {
                     if (newSelectionModel.length > 0) {
                         console.log('Checkbox Money', newSelectionModel, detail.api.state)
